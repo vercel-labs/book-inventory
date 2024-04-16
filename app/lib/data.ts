@@ -3,6 +3,7 @@ import { sql } from '@vercel/postgres';
 export async function fetchFilteredBooks(selectedAuthors: string[], query: string) {
 	if (selectedAuthors.length > 0) {
 		try {
+			// @ts-ignore
 			const books = await sql`
                 SELECT ALL
                     id,

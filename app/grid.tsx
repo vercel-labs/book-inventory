@@ -25,21 +25,7 @@ export default async function Grid({
 							className="mb-auto transition ease-in-out hover:scale-110 bg-white/10"
 						>
 							<div className="relative w-full aspect-[2/3]">
-								{/* TODO: Use Image component */}
-								{/* <Image
-									src={book.image}
-									alt={book.title}
-									width="150"
-									height="150"
-								/> */}
 								<Tile src={book.image} title={book.title} />
-								{/* <img
-									alt={book.title}
-									width="150"
-									height="150"
-									className="absolute inset-0 object-cover w-full h-full rounded-lg shadow-sm shadow-black"
-									src={book.image}
-								/> */}
 							</div>
 						</Link>
 					))
