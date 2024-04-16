@@ -3,7 +3,8 @@ import { sql } from '@vercel/postgres';
 export async function fetchFilteredBooks(selectedAuthors: string[], query: string) {
 	if (selectedAuthors.length > 0) {
 		try {
-			// @ts-ignore
+			const authorsDelimited = selectedAuthors.join('|');
+
 			const books = await sql`
                 SELECT ALL
                     id,
@@ -16,7 +17,7 @@ export async function fetchFilteredBooks(selectedAuthors: string[], query: strin
                     "createdAt"
                 FROM books
                 WHERE
-                    "author" = ANY(${selectedAuthors}) AND (
+                    "author" = ANY(STRING_TO_ARRAY(${authorsDelimited}, '|')) AND (
                         isbn ILIKE ${`%${query}%`} OR
                         "title" ILIKE ${`%${query}%`} OR
                         "author" ILIKE ${`%${query}%`} OR
