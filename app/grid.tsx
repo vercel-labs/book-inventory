@@ -1,6 +1,5 @@
 import { fetchFilteredBooks } from './lib/data';
 import Link from 'next/link';
-import Image from 'next/image';
 import Tile from './tile';
 
 export default async function Grid({
