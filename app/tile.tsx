@@ -21,7 +21,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 				onError={() => {
 					setIsOptimized(false);
 				}}
-				onLoadingComplete={() => {
+				onLoad={() => {
 					setIsLoading(false);
 				}}
 			/>
