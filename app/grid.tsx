@@ -1,37 +1,39 @@
-import { fetchFilteredBooks } from "./lib/data";
-import Link from "next/link";
-import Tile from "./tile";
+import { fetchFilteredBooks } from './lib/data';
+import Link from 'next/link';
+import Tile from './tile';
 
 export default async function Grid({
-  selectedAuthors,
-  query,
+	selectedAuthors,
+	query,
+	page
 }: {
-  selectedAuthors: string[];
-  query: string;
+	selectedAuthors: string[];
+	query: string;
+	page: number;
 }) {
-  const data = await fetchFilteredBooks(selectedAuthors, query);
-  return (
-    <>
-      <div className="grid w-full grid-cols-2 gap-6 mt-6 sm:grid-cols-3 lg:grid-cols-5">
-        {data.length === 0 ? (
-          <p className="text-center text-gray-400 col-span-full">
-            No books found.
-          </p>
-        ) : (
-          data.map((book) => (
-            <Link
-              href={`/${book.id}`}
-              key={book.id}
-              prefetch={true}
-              className="mb-auto transition ease-in-out hover:scale-110 bg-white/10"
-            >
-              <div className="relative w-full aspect-[2/3]">
-                <Tile src={book.image} title={book.title} />
-              </div>
-            </Link>
-          ))
-        )}
-      </div>
-    </>
-  );
+	const data = await fetchFilteredBooks(selectedAuthors, query, page);
+	return (
+		<>
+			<div className="grid w-full grid-cols-2 gap-6 mt-6 sm:grid-cols-3 lg:grid-cols-5">
+				{data.length === 0 ? (
+					<p className="text-center text-gray-400 col-span-full">No books found.</p>
+				) : (
+					data.map((book) => (
+						<Link
+							href={`/${book.id}`}
+							key={book.id}
+							className="mb-auto transition ease-in-out hover:scale-110 bg-white/10"
+						>
+							<div className="relative w-full aspect-[2/3]">
+								<Tile
+									src={`https://images.amazon.com/images/P/${book.isbn}.01.MZZZZZZZ.jpg`}
+									title={book.title}
+								/>
+							</div>
+						</Link>
+					))
+				)}
+			</div>
+		</>
+	);
 }
