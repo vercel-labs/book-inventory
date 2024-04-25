@@ -12,17 +12,17 @@ export default async function Page({ params }: { params: { id: string } }) {
 			>
 				← Back to all books
 			</Link>
-			<div className="hidden md:block relative w-1/5 aspect-[2/3]">
+			{/* <div className="hidden md:block relative w-1/5 aspect-[2/3]">
 				<Tile src={book.image} title={book.title} />
-			</div>
-			<div className="md:w-2/3 dark:bg-white/10 bg-white rounded-lg p-6 md:px-10 md:pb-10 md:pt-32 md:-mt-20 flex flex-col items-center">
-				<div className="md:hidden relative w-1/2 md:w-1/5 aspect-[2/3] mb-6">
+			</div> */}
+			<div className="md:w-2/3 dark:bg-white/10 bg-white rounded-lg p-6 flex flex-col items-center">
+				<div className="w-full md:w-1/4 relative aspect-[2/3] mb-6">
 					<Tile src={book.image} title={book.title} />
 				</div>
-				<div className="text-3xl font-bold text-center mb-6">{book.title}</div>
-				<div>Written By: {book.author}</div>
-				<div>Published In: {book.year}</div>
-				<div>Published By: {book.publisher}</div>
+				<div className="text-5xl font-bold text-center mb-6">{book.title}</div>
+				<div className="text-lg text-center">Written By: {book.author}</div>
+				<div className="text-lg text-center">Published In: {book.year}</div>
+				<div className="text-lg text-center">Published By: {book.publisher}</div>
 			</div>
 		</div>
 	);
