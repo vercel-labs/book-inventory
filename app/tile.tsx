@@ -17,7 +17,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 				width="200"
 				height="200"
 				unoptimized={!isOptimized}
-				className=" absolute inset-0 object-cover w-full h-full rounded-lg shadow-sm "
+				className="absolute inset-0 object-cover w-full h-full rounded-lg shadow-sm "
 				onError={() => {
 					setIsOptimized(false);
 				}}

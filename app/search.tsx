@@ -5,12 +5,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import { useState } from 'react';
 
-export default function Search({ placeholder }: { placeholder: string }) {
+export default function Search() {
 	const [loading, setLoading] = useState(false);
 	const searchParams = useSearchParams();
 	const { replace } = useRouter();
 	const pathname = usePathname();
-
 	const handleSearch = useDebouncedCallback((term) => {
 		const params = new URLSearchParams(searchParams);
 		params.set('page', '1');
@@ -30,7 +29,7 @@ export default function Search({ placeholder }: { placeholder: string }) {
 			</label>
 			<input
 				className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-				placeholder={placeholder}
+				placeholder="Search books..."
 				id="search"
 				onChange={(e) => {
 					setLoading(true);

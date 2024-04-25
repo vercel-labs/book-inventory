@@ -1,6 +1,7 @@
 import { fetchFilteredBooks } from './lib/data';
 import Link from 'next/link';
 import Tile from './tile';
+import { buffer } from 'stream/consumers';
 
 export default async function Grid({
 	selectedAuthors,
@@ -14,7 +15,7 @@ export default async function Grid({
 	const data = await fetchFilteredBooks(selectedAuthors, query, page);
 	return (
 		<>
-			<div className="grid w-full grid-cols-2 gap-6 mt-6 sm:grid-cols-3 lg:grid-cols-5">
+			<div className="grid w-full grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
 				{data.length === 0 ? (
 					<p className="text-center text-gray-400 col-span-full">No books found.</p>
 				) : (
@@ -22,13 +23,10 @@ export default async function Grid({
 						<Link
 							href={`/${book.id}`}
 							key={book.id}
-							className="mb-auto transition ease-in-out hover:scale-110 bg-white/10"
+							className="mb-auto transition ease-in-out hover:scale-110 bg-black/10 dark:bg-white/10 rounded-lg"
 						>
 							<div className="relative w-full aspect-[2/3]">
-								<Tile
-									src={`https://images.amazon.com/images/P/${book.isbn}.01.MZZZZZZZ.jpg`}
-									title={book.title}
-								/>
+								<Tile src={book.image} title={book.title} />
 							</div>
 						</Link>
 					))

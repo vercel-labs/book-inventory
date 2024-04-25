@@ -113,7 +113,6 @@ export default function Panel({
 						onClick={() => {
 							startTransition(() => {
 								setOptimisticAuthors([]);
-
 								router.push(`/`);
 							});
 						}}

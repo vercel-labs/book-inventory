@@ -24,7 +24,7 @@ export default async function Page({
 
 	return (
 		<main className="flex flex-col justify-between w-full">
-			<Search placeholder="Search books..." />
+			<Search />
 			<div className="mt-5 flex w-full justify-center">
 				<Pagination totalPages={totalPages} />
 			</div>
