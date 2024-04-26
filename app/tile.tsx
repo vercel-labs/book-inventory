@@ -19,6 +19,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 				unoptimized={!isOptimized}
 				className="absolute inset-0 object-cover w-full h-full rounded-lg shadow-sm "
 				onError={() => {
+					console.log('Error loading image');
 					setIsOptimized(false);
 				}}
 				onLoad={() => {

@@ -1,7 +1,7 @@
-const { db } = require('@vercel/postgres');
-const fs = require('fs');
-const path = require('path');
-const Papa = require('papaparse');
+import { db } from '@vercel/postgres';
+import fs from 'fs';
+import path from 'path';
+import Papa from 'papaparse';
 
 const parseCSV = async (filePath) => {
 	const csvFile = fs.readFileSync(path.resolve(filePath), 'utf8');
