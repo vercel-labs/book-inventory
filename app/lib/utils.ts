@@ -1,3 +1,4 @@
+// TODO: Since pagination.tsx is the only place that uses this, maybe move it to that file?
 export const generatePagination = (currentPage: number, totalPages: number) => {
 	if (totalPages <= 7) {
 		return Array.from({ length: totalPages }, (_, i) => i + 1);

@@ -8,6 +8,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	return (
+		// TODO: Use fragment instead?
 		<div>
 			{isLoading && <BookSkeleton />}
 			<Image

@@ -46,6 +46,7 @@ export default function Panel({
 			>
 				<div className="p-4">
 					<h2 className="text-lg font-semibold tracking-tight dark:text-gray-100">Authors</h2>
+					// TODO: Remove or use fragment instead?
 					<div className="">
 						{Object.entries(authorGroups).map(([letter, authors]) => (
 							<div key={letter}>

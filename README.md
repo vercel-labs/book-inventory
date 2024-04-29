@@ -36,3 +36,14 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 # book-inventory
+
+TODO:
+
+- Add instructions on how to get up and running, like running `seed`
+- Replace `dotenv` with `@next/env`
+- Move `prettier` to `devDependencies`
+- Remove `public` assets if they're not used
+- I know we can colocate files with App Router, but we usually move `lib` out. Should we also create a `components`?
+- Run `prettier` over the codebase. It was added late and there's 18 files not passing the prettier check.
+- Setup GitHub Actions to run `prettier:check` on PRs (reference `commerce`)
+- Are we using `npm` or `pnpm` on this project? Looks like `npm` as I don't see a `pnpm` lockfile
