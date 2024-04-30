@@ -1,24 +1,24 @@
-import { db } from '@vercel/postgres';
-import fs from 'fs';
-import path from 'path';
-import Papa from 'papaparse';
-import '../envConfig.mjs';
+import { db } from "@vercel/postgres";
+import fs from "fs";
+import path from "path";
+import Papa from "papaparse";
+import "../envConfig.mjs";
 
 const parseCSV = async (filePath) => {
-	const csvFile = fs.readFileSync(path.resolve(filePath), 'utf8');
-	return new Promise((resolve) => {
-		Papa.parse(csvFile, {
-			header: true,
-			complete: (results) => {
-				resolve(results.data);
-			}
-		});
-	});
+  const csvFile = fs.readFileSync(path.resolve(filePath), "utf8");
+  return new Promise((resolve) => {
+    Papa.parse(csvFile, {
+      header: true,
+      complete: (results) => {
+        resolve(results.data);
+      },
+    });
+  });
 };
 
 async function seed(client) {
-	// Creating the books table
-	const createBooksTable = await client.sql`
+  // Creating the books table
+  const createBooksTable = await client.sql`
     CREATE TABLE IF NOT EXISTS books (
       id SERIAL PRIMARY KEY,
       isbn VARCHAR(255) UNIQUE NOT NULL,
@@ -30,34 +30,37 @@ async function seed(client) {
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
   `;
-	console.log('Created "books" table');
+  console.log('Created "books" table');
 
-	const bookData = await parseCSV('./books.csv');
+  const bookData = await parseCSV("./books.csv");
 
-	// Inserting book data into the books table
-	const promises = bookData.map((book, index) => {
-		return client.sql`
+  // Inserting book data into the books table
+  const promises = bookData.map((book, index) => {
+    return client.sql`
     INSERT INTO books (isbn, "title", "author", "year", publisher, "image")
-    VALUES (${book.ISBN}, ${book['Book-Title']}, ${book['Book-Author']}, ${book['Year-Of-Publication']}, ${book.Publisher}, ${`https://images.amazon.com/images/P/${book.ISBN}.01.LZZZZZZZ.jpg`})
+    VALUES (${book.ISBN}, ${book["Book-Title"]}, ${book["Book-Author"]}, ${book["Year-Of-Publication"]}, ${book.Publisher}, ${`https://images.amazon.com/images/P/${book.ISBN}.01.LZZZZZZZ.jpg`})
     ON CONFLICT (isbn) DO NOTHING;
   `;
-	});
+  });
 
-	const results = await Promise.all(promises);
-	console.log(`Seeded ${results.length} books`);
+  const results = await Promise.all(promises);
+  console.log(`Seeded ${results.length} books`);
 
-	return {
-		createBooksTable,
-		seededBooks: results.length
-	};
+  return {
+    createBooksTable,
+    seededBooks: results.length,
+  };
 }
 
 async function main() {
-	const client = await db.connect();
-	await seed(client);
-	await client.end();
+  const client = await db.connect();
+  await seed(client);
+  await client.end();
 }
 
 main().catch((err) => {
-	console.error('An error occurred while attempting to seed the database:', err);
+  console.error(
+    "An error occurred while attempting to seed the database:",
+    err,
+  );
 });
