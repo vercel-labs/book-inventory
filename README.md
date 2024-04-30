@@ -2,16 +2,18 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+Create your [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) database and add your environment variables to a `.env` file in the root of the project.
+
+Seed the database with the following command:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm seed
+```
+
+Run the development server:
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
