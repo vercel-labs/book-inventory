@@ -2,6 +2,7 @@ import { db } from '@vercel/postgres';
 import fs from 'fs';
 import path from 'path';
 import Papa from 'papaparse';
+import '../envConfig.mjs';
 
 const parseCSV = async (filePath) => {
 	const csvFile = fs.readFileSync(path.resolve(filePath), 'utf8');

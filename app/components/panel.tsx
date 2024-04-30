@@ -46,58 +46,56 @@ export default function Panel({
 			>
 				<div className="p-4">
 					<h2 className="text-lg font-semibold tracking-tight dark:text-gray-100">Authors</h2>
-					<div className="">
-						{Object.entries(authorGroups).map(([letter, authors]) => (
-							<div key={letter}>
-								<button
-									onClick={() => toggleSection(letter)}
-									className="p-1 mb-1 rounded flex items-center justify-between w-full text-left hover:bg-stone-100 dark:hover:bg-white/20"
-								>
-									<div>
-										{letter} <span className="text-xs">({authors.length})</span>
-									</div>
-									<ChevronDownIcon
-										className={`w-4 ${expandedSections[letter] ? 'rotate-180' : ''}`}
-									/>
-								</button>
-								<div
-									className={`overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1 ${
-										expandedSections[letter] ? '' : 'max-h-0'
-									}`}
-								>
-									{expandedSections[letter] &&
-										authors.map((author) => (
-											<button
-												onClick={() => {
-													let newAuthors = !optimisticAuthors.includes(author)
-														? [...optimisticAuthors, author]
-														: optimisticAuthors.filter((g) => g !== author);
-
-													let newParams = new URLSearchParams(
-														newAuthors.sort().map((author) => ['author', author])
-													);
-
-													startTransition(() => {
-														setOptimisticAuthors(newAuthors.sort());
-
-														router.push(`?${newParams}`);
-													});
-												}}
-												key={author}
-												className="flex items-center space-x-2 text-xs"
-											>
-												<input
-													type="checkbox"
-													className=""
-													checked={optimisticAuthors.includes(author)}
-												/>
-												<div>{author}</div>
-											</button>
-										))}
+					{Object.entries(authorGroups).map(([letter, authors]) => (
+						<div key={letter}>
+							<button
+								onClick={() => toggleSection(letter)}
+								className="p-1 mb-1 rounded flex items-center justify-between w-full text-left hover:bg-stone-100 dark:hover:bg-white/20"
+							>
+								<div>
+									{letter} <span className="text-xs">({authors.length})</span>
 								</div>
+								<ChevronDownIcon
+									className={`w-4 ${expandedSections[letter] ? 'rotate-180' : ''}`}
+								/>
+							</button>
+							<div
+								className={`overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1 ${
+									expandedSections[letter] ? '' : 'max-h-0'
+								}`}
+							>
+								{expandedSections[letter] &&
+									authors.map((author) => (
+										<button
+											onClick={() => {
+												let newAuthors = !optimisticAuthors.includes(author)
+													? [...optimisticAuthors, author]
+													: optimisticAuthors.filter((g) => g !== author);
+
+												let newParams = new URLSearchParams(
+													newAuthors.sort().map((author) => ['author', author])
+												);
+
+												startTransition(() => {
+													setOptimisticAuthors(newAuthors.sort());
+
+													router.push(`?${newParams}`);
+												});
+											}}
+											key={author}
+											className="flex items-center space-x-2 text-xs"
+										>
+											<input
+												type="checkbox"
+												className=""
+												checked={optimisticAuthors.includes(author)}
+											/>
+											<div>{author}</div>
+										</button>
+									))}
 							</div>
-						))}
-					</div>
+						</div>
+					))}
 				</div>
 			</div>
 

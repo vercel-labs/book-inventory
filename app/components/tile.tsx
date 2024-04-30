@@ -8,7 +8,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 	const [isLoading, setIsLoading] = useState(true);
 
 	return (
-		<div>
+		<>
 			{isLoading && <BookSkeleton />}
 			<Image
 				id="img"
@@ -25,7 +25,7 @@ const Page = ({ src, title }: { src: string; title: string }) => {
 					setIsLoading(false);
 				}}
 			/>
-		</div>
+		</>
 	);
 };
 

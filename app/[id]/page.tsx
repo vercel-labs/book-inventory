@@ -1,6 +1,6 @@
 import { fetchBookById } from '../lib/data';
 import Link from 'next/link';
-import Tile from '../tile';
+import Tile from '../components/tile';
 
 export default async function Page({ params }: { params: { id: string } }) {
 	const book = await fetchBookById(params.id);

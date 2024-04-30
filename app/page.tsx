@@ -1,11 +1,11 @@
-import Grid from './grid';
-import Panel from './panel';
-import Search from './search';
+import Grid from './components/grid';
+import Panel from './components/panel';
+import Search from './components/search';
 import { Suspense } from 'react';
 import { fetchAuthors } from './lib/data';
-import { LoadingSkeleton } from './loading-skeleton';
+import { LoadingSkeleton } from './components/loading-skeleton';
 import { fetchPages } from './lib/data';
-import Pagination from './pagination';
+import Pagination from './components/pagination';
 
 export default async function Page({
 	searchParams

@@ -1,7 +1,6 @@
-import { fetchFilteredBooks } from './lib/data';
+import { fetchFilteredBooks } from '../lib/data';
 import Link from 'next/link';
 import Tile from './tile';
-import { buffer } from 'stream/consumers';
 
 export default async function Grid({
 	selectedAuthors,
