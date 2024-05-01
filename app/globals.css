@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .star {
-	color: gold;
-	font-size: 24px;
-	user-select: none; /* prevent text selection */
+  color: gold;
+  font-size: 24px;
+  user-select: none; /* prevent text selection */
 }
