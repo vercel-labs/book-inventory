@@ -13,15 +13,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        run: |
-          curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
-          echo "$(npm bin -g)" >> $GITHUB_PATH
+          cache: 'npm'
 
       - name: Install Prettier
-        run: pnpm add prettier
+        run: npm install --save-dev prettier
 
       - name: Check formatting
         run: npx prettier --check .
