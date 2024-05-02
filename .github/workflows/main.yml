@@ -1,4 +1,4 @@
-name: 'Check Prettier Formatting'
+name: "Check Prettier Formatting"
 
 on: pull_request
 
@@ -12,8 +12,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          cache: 'npm'
+          node-version: "16"
+          cache: "npm"
 
       - name: Install Prettier
         run: npm install --save-dev prettier
