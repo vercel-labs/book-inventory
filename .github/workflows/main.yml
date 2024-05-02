@@ -1,4 +1,4 @@
-name: "Check Prettier Formatting"
+name: 'Check Prettier Formatting'
 
 on: pull_request
 
@@ -12,11 +12,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
-          cache: "pnpm"
+          node-version: '16'
+          cache: 'pnpm'
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: |
+          curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+          echo "$(npm bin -g)" >> $GITHUB_PATH
 
       - name: Install Prettier
         run: pnpm add prettier
