@@ -27,6 +27,8 @@ async function seed(client) {
       "year" INT,
       publisher VARCHAR(255),
       "image" VARCHAR(255),
+			"description" TEXT,
+			"rating" NUMERIC,
       "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -36,9 +38,14 @@ async function seed(client) {
 
   // Inserting book data into the books table
   const promises = bookData.map((book, index) => {
+    // An error occurred while attempting to seed the database: error: null value in column "isbn" of relation "books" violates not-null constraint
+    if (!book.isbn) {
+      console.error(`Skipping book at index ${index} due to missing ISBN`);
+      return Promise.resolve();
+    }
     return client.sql`
-    INSERT INTO books (isbn, "title", "author", "year", publisher, "image")
-    VALUES (${book.ISBN}, ${book["Book-Title"]}, ${book["Book-Author"]}, ${book["Year-Of-Publication"]}, ${book.Publisher}, ${`https://images.amazon.com/images/P/${book.ISBN}.01.LZZZZZZZ.jpg`})
+    INSERT INTO books (isbn, "title", "author", "year", publisher, "image", "description", "rating")
+    VALUES (${book.bookId}, ${book.title}, ${book.author}, ${book.publisherDate}, ${book.Publisher}, ${book.coverImg}, ${book.description}, ${book.rating})
     ON CONFLICT (isbn) DO NOTHING;
   `;
   });

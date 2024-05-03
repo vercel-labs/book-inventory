@@ -39,10 +39,10 @@ export default function Panel({
   };
 
   return (
-    <div className="mb-auto bg-white rounded-md shadow-md dark:shadow-gray-950/30 dark:bg-white/10">
+    <div className="mb-auto bg-white rounded-md shadow-md lg:w-60 dark:shadow-gray-950/30 dark:bg-white/10">
       <div
         data-pending={pending ? "" : undefined}
-        className="lg:w-60 md:h-80 lg:h-[70vh] overflow-y-auto"
+        className=" lg:h-[70vh] md:h-80 overflow-auto"
       >
         <div className="p-4">
           <h2 className="text-lg font-semibold tracking-tight dark:text-gray-100">
@@ -52,7 +52,7 @@ export default function Panel({
             <div key={letter}>
               <button
                 onClick={() => toggleSection(letter)}
-                className="p-1 mb-1 rounded flex items-center justify-between w-full text-left hover:bg-stone-100 dark:hover:bg-white/20"
+                className="flex items-center justify-between w-full p-1 mb-1 text-left rounded hover:bg-stone-100 dark:hover:bg-white/20"
               >
                 <div>
                   {letter} <span className="text-xs">({authors.length})</span>
@@ -85,7 +85,7 @@ export default function Panel({
                         });
                       }}
                       key={author}
-                      className="flex items-center space-x-2 text-xs"
+                      className="flex items-center space-x-2 text-xs text-left"
                     >
                       <input
                         type="checkbox"

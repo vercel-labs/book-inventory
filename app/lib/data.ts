@@ -23,6 +23,8 @@ export async function fetchFilteredBooks(
                     "year",
                     publisher,
                     image,
+                    "description",
+                    "rating",
                     "createdAt"
                 FROM books
                 WHERE
@@ -53,6 +55,8 @@ export async function fetchFilteredBooks(
                 "year",
                 publisher,
                 "image",
+                "description",
+                "rating",
                 "createdAt"
             FROM books
             WHERE

@@ -13,10 +13,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "16"
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install Prettier
-        run: pnpm add prettier
+        run: npm install --save-dev prettier
 
       - name: Check formatting
         run: npx prettier --check .

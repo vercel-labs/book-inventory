@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "images.amazon.com",
+        hostname: "i.gr-assets.com",
         port: "",
       },
     ],
