@@ -15,6 +15,7 @@ export default async function Page({
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const allAuthors = await fetchAuthors();
+  console.log(allAuthors);
   const selectedAuthors = !searchParams.author
     ? []
     : typeof searchParams.author === "string"
@@ -22,7 +23,7 @@ export default async function Page({
       : searchParams.author;
   const totalPages = await fetchPages(query, selectedAuthors);
 
-  if (typeof allAuthors === "string") {
+  if (!allAuthors) {
     return (
       <div className="max-w-md p-6 mx-auto bg-white border border-gray-200 rounded-lg shadow-md">
         <h2 className="mb-4 text-xl font-bold text-center text-gray-900">

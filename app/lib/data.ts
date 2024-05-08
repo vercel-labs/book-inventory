@@ -47,7 +47,7 @@ export async function fetchFilteredBooks(
     } catch (error) {
       if (isTableMissing(error)) {
         console.error("Database Error - Table missing:", error);
-        return "No books table exists";
+        return [];
       } else {
         console.error("Database Error:", error);
         throw new Error("Failed to fetch books.");
@@ -82,7 +82,7 @@ export async function fetchFilteredBooks(
   } catch (error) {
     if (isTableMissing(error)) {
       console.error("Database Error - Table missing:", error);
-      return "No books table exists";
+      return [];
     } else {
       console.error("Database Error:", error);
       throw new Error("Failed to fetch books.");
@@ -96,17 +96,18 @@ export async function fetchBookById(id: string) {
 }
 
 export async function fetchAuthors() {
+  noStore();
   try {
     const authors = await sql`
-            SELECT DISTINCT "author"
-            FROM books
-            ORDER BY "author"
-        `;
+		        SELECT DISTINCT "author"
+		        FROM books
+		        ORDER BY "author"
+		    `;
     return authors.rows?.map((row) => row.author);
   } catch (error) {
     if (isTableMissing(error)) {
       console.error("Database Error - Table missing:", error);
-      return "No books table exists";
+      return [];
     } else {
       console.error("Database Error:", error);
       throw new Error("Failed to fetch authors.");
