@@ -25,7 +25,7 @@ export default async function Page({
   return (
     <main className="flex flex-col justify-between w-full">
       <Search />
-      <div className="mt-5 flex w-full justify-center">
+      <div className="flex justify-center w-full mt-5">
         <Pagination totalPages={totalPages} />
       </div>
       <div className="flex flex-col gap-6 py-6 lg:flex-row">
@@ -38,7 +38,7 @@ export default async function Page({
           />
         </Suspense>
       </div>
-      <div className="mt-5 flex w-full justify-center">
+      <div className="flex justify-center w-full mt-5">
         <Pagination totalPages={totalPages} />
       </div>
     </main>
