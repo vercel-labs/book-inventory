@@ -51,7 +51,7 @@ export default async function Page({
         <Pagination totalPages={totalPages} />
       </div>
       <div className="flex flex-col gap-6 py-6 lg:flex-row">
-        <Panel authors={selectedAuthors} allAuthors={allAuthors} />
+        <Panel selectedAuthors={selectedAuthors} allAuthors={allAuthors} />
         <Suspense fallback={<LoadingSkeleton />}>
           <Grid
             selectedAuthors={selectedAuthors}

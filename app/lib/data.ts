@@ -1,5 +1,4 @@
 import { sql } from "@vercel/postgres";
-import { unstable_noStore as noStore } from "next/cache";
 
 const ITEMS_PER_PAGE = 30;
 
@@ -13,7 +12,6 @@ export async function fetchFilteredBooks(
   query: string,
   currentPage: number,
 ) {
-  noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   if (selectedAuthors.length > 0) {
     try {
@@ -96,7 +94,6 @@ export async function fetchBookById(id: string) {
 }
 
 export async function fetchAuthors() {
-  noStore();
   try {
     const authors = await sql`
 		        SELECT DISTINCT "author"
@@ -116,7 +113,6 @@ export async function fetchAuthors() {
 }
 
 export async function fetchPages(query: string, selectedAuthors: string[]) {
-  noStore();
   if (selectedAuthors.length > 0) {
     try {
       const authorsDelimited = selectedAuthors.join("|");

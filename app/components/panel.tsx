@@ -10,15 +10,16 @@ interface ExpandedSections {
 }
 
 export default function Panel({
-  authors,
+  selectedAuthors,
   allAuthors,
 }: {
-  authors: string[];
+  selectedAuthors: string[];
   allAuthors: string[];
 }) {
   let router = useRouter();
   let [pending, startTransition] = useTransition();
-  let [optimisticAuthors, setOptimisticAuthors] = useOptimistic(authors);
+  let [optimisticAuthors, setOptimisticAuthors] =
+    useOptimistic(selectedAuthors);
   let [expandedSections, setExpandedSections] = useState<ExpandedSections>({});
   let [isPanelVisible, setPanelVisibility] = useState(false);
 
