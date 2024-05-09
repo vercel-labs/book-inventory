@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition, useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { FunnelIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 interface ExpandedSections {
   [key: string]: boolean;

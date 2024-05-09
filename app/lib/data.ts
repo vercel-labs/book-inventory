@@ -7,7 +7,7 @@ function isTableMissing(error: any) {
   return error.code === "42P01";
 }
 
-function errorMessage(error: any, returnVal: number | never[]) {
+function handleDatabaseError(error: any, returnVal: number | never[]) {
   if (isTableMissing(error)) {
     console.error("Database Error - Table missing:", error);
     return returnVal;
@@ -53,7 +53,7 @@ export async function fetchFilteredBooks(
             `;
       return books.rows;
     } catch (error) {
-      errorMessage(error, []);
+      return handleDatabaseError(error, []);
     }
   }
 
@@ -82,7 +82,7 @@ export async function fetchFilteredBooks(
         `;
     return books.rows;
   } catch (error) {
-    errorMessage(error, []);
+    return handleDatabaseError(error, []);
   }
 }
 
@@ -100,7 +100,7 @@ export async function fetchAuthors() {
 		    `;
     return authors.rows?.map((row) => row.author);
   } catch (error) {
-    errorMessage(error, []);
+    return handleDatabaseError(error, []);
   }
 }
 
@@ -126,7 +126,7 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
       );
       return totalPages;
     } catch (error) {
-      errorMessage(error, 0);
+      return handleDatabaseError(error, 0);
     }
   }
 
@@ -144,6 +144,6 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    errorMessage(error, 0);
+    return handleDatabaseError(error, 0);
   }
 }

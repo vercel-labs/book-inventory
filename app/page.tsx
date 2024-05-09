@@ -15,7 +15,6 @@ export default async function Page({
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const allAuthors = await fetchAuthors();
-  console.log(allAuthors);
   const selectedAuthors = !searchParams.author
     ? []
     : typeof searchParams.author === "string"
