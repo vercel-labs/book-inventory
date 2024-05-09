@@ -15,7 +15,7 @@ export default async function Grid({
   return (
     <>
       <div className="grid w-full grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
-        {!data || data.length === 0 ? (
+        {!data?.length ? (
           <p className="text-center text-gray-400 col-span-full">
             No books found.
           </p>
