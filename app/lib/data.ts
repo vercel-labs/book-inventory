@@ -7,6 +7,16 @@ function isTableMissing(error: any) {
   return error.code === "42P01";
 }
 
+function errorMessage(error: any, returnVal: number | never[]) {
+  if (isTableMissing(error)) {
+    console.error("Database Error - Table missing:", error);
+    return returnVal;
+  } else {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch books.");
+  }
+}
+
 export async function fetchFilteredBooks(
   selectedAuthors: string[],
   query: string,
@@ -43,13 +53,7 @@ export async function fetchFilteredBooks(
             `;
       return books.rows;
     } catch (error) {
-      if (isTableMissing(error)) {
-        console.error("Database Error - Table missing:", error);
-        return [];
-      } else {
-        console.error("Database Error:", error);
-        throw new Error("Failed to fetch books.");
-      }
+      errorMessage(error, []);
     }
   }
 
@@ -78,13 +82,7 @@ export async function fetchFilteredBooks(
         `;
     return books.rows;
   } catch (error) {
-    if (isTableMissing(error)) {
-      console.error("Database Error - Table missing:", error);
-      return [];
-    } else {
-      console.error("Database Error:", error);
-      throw new Error("Failed to fetch books.");
-    }
+    errorMessage(error, []);
   }
 }
 
@@ -102,13 +100,7 @@ export async function fetchAuthors() {
 		    `;
     return authors.rows?.map((row) => row.author);
   } catch (error) {
-    if (isTableMissing(error)) {
-      console.error("Database Error - Table missing:", error);
-      return [];
-    } else {
-      console.error("Database Error:", error);
-      throw new Error("Failed to fetch authors.");
-    }
+    errorMessage(error, []);
   }
 }
 
@@ -134,13 +126,7 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
       );
       return totalPages;
     } catch (error) {
-      if (isTableMissing(error)) {
-        console.error("Database Error - Table missing:", error);
-        return 0;
-      } else {
-        console.error("Database Error:", error);
-        throw new Error("Failed to fetch books.");
-      }
+      errorMessage(error, 0);
     }
   }
 
@@ -158,12 +144,6 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    if (isTableMissing(error)) {
-      console.error("Database Error - Table missing:", error);
-      return 0;
-    } else {
-      console.error("Database Error:", error);
-      throw new Error("Failed to fetch total number of books.");
-    }
+    errorMessage(error, 0);
   }
 }
