@@ -81,9 +81,12 @@ export default function Panel({
                   />
                 </button>
                 <div
-                  className={`overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1 ${
-                    expandedSections[letter] ? "" : "max-h-0"
-                  }`}
+                  className={clsx(
+                    "overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1",
+                    {
+                      "max-h-0": !expandedSections[letter],
+                    },
+                  )}
                 >
                   {expandedSections[letter] &&
                     authors.map((author) => (
