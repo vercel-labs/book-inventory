@@ -51,7 +51,7 @@ export default function Panel({
         <FunnelIcon className="w-4" />{" "}
         <div className="text-sm">Filter Authors</div>{" "}
         <ChevronDownIcon
-          className={`w-4 ${isPanelVisible ? "rotate-180" : ""}`}
+          className={clsx("w-4", { "rotate-180": isPanelVisible })}
         />
       </button>
       <div
@@ -75,7 +75,9 @@ export default function Panel({
                     {letter} <span className="text-xs">({authors.length})</span>
                   </div>
                   <ChevronDownIcon
-                    className={`w-4 ${expandedSections[letter] ? "rotate-180" : ""}`}
+                    className={clsx("w-4", {
+                      "rotate-180": expandedSections[letter],
+                    })}
                   />
                 </button>
                 <div

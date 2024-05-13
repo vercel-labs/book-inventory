@@ -7,10 +7,10 @@ function isTableMissing(error: any) {
   return error.code === "42P01";
 }
 
-function handleDatabaseError(error: any, returnVal: number | never[]) {
+function handleDatabaseError(error: any, returnValue: any) {
   if (isTableMissing(error)) {
     console.error("Database Error - Table missing:", error);
-    return returnVal;
+    return returnValue;
   } else {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch books.");

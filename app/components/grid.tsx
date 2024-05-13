@@ -2,6 +2,12 @@ import { fetchFilteredBooks } from "../lib/data";
 import Link from "next/link";
 import Tile from "./tile";
 
+interface Book {
+  id: string;
+  title: string;
+  image: string;
+}
+
 export default async function Grid({
   selectedAuthors,
   query,
@@ -20,7 +26,7 @@ export default async function Grid({
             No books found.
           </p>
         ) : (
-          data.map((book) => (
+          data.map((book: Book) => (
             <Link
               href={`/${book.id}`}
               key={book.id}
