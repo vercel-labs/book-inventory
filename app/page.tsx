@@ -22,14 +22,35 @@ export default async function Page({
       : searchParams.author;
   const totalPages = await fetchPages(query, selectedAuthors);
 
+  if (!allAuthors) {
+    return (
+      <div className="max-w-md p-6 mx-auto bg-white border border-gray-200 rounded-lg shadow-md">
+        <h2 className="mb-4 text-xl font-bold text-center text-gray-900">
+          Database Setup Required
+        </h2>
+        <p className="text-gray-700">
+          Your database does not have a{" "}
+          <code className="p-1 font-mono text-red-600 bg-gray-200 rounded">
+            books
+          </code>{" "}
+          table. Please run the script{" "}
+          <code className="p-1 font-mono text-green-600 bg-gray-200 rounded">
+            npm run seed
+          </code>{" "}
+          to create the table and seed it with data.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <main className="flex flex-col justify-between w-full">
       <Search />
-      <div className="mt-5 flex w-full justify-center">
+      <div className="flex justify-center w-full mt-5">
         <Pagination totalPages={totalPages} />
       </div>
       <div className="flex flex-col gap-6 py-6 lg:flex-row">
-        <Panel authors={selectedAuthors} allAuthors={allAuthors} />
+        <Panel selectedAuthors={selectedAuthors} allAuthors={allAuthors} />
         <Suspense fallback={<LoadingSkeleton />}>
           <Grid
             selectedAuthors={selectedAuthors}
@@ -38,7 +59,7 @@ export default async function Page({
           />
         </Suspense>
       </div>
-      <div className="mt-5 flex w-full justify-center">
+      <div className="flex justify-center w-full mt-5">
         <Pagination totalPages={totalPages} />
       </div>
     </main>

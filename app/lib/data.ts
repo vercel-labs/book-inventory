@@ -1,14 +1,27 @@
 import { sql } from "@vercel/postgres";
-import { unstable_noStore as noStore } from "next/cache";
 
 const ITEMS_PER_PAGE = 30;
+
+function isTableMissing(error: any) {
+  // PostgreSQL error code for "undefined table"
+  return error.code === "42P01";
+}
+
+function handleDatabaseError(error: any, returnValue: any) {
+  if (isTableMissing(error)) {
+    console.error("Database Error - Table missing:", error);
+    return returnValue;
+  } else {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch books.");
+  }
+}
 
 export async function fetchFilteredBooks(
   selectedAuthors: string[],
   query: string,
   currentPage: number,
 ) {
-  noStore();
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   if (selectedAuthors.length > 0) {
     try {
@@ -40,8 +53,7 @@ export async function fetchFilteredBooks(
             `;
       return books.rows;
     } catch (error) {
-      console.error("Database Error:", error);
-      throw new Error("Failed to fetch books.");
+      return handleDatabaseError(error, []);
     }
   }
 
@@ -70,8 +82,7 @@ export async function fetchFilteredBooks(
         `;
     return books.rows;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch books.");
+    return handleDatabaseError(error, []);
   }
 }
 
@@ -83,19 +94,17 @@ export async function fetchBookById(id: string) {
 export async function fetchAuthors() {
   try {
     const authors = await sql`
-            SELECT DISTINCT "author"
-            FROM books
-            ORDER BY "author"
-        `;
+		        SELECT DISTINCT "author"
+		        FROM books
+		        ORDER BY "author"
+		    `;
     return authors.rows?.map((row) => row.author);
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch authors.");
+    return handleDatabaseError(error, []);
   }
 }
 
 export async function fetchPages(query: string, selectedAuthors: string[]) {
-  noStore();
   if (selectedAuthors.length > 0) {
     try {
       const authorsDelimited = selectedAuthors.join("|");
@@ -117,8 +126,7 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
       );
       return totalPages;
     } catch (error) {
-      console.error("Database Error:", error);
-      throw new Error("Failed to fetch books.");
+      return handleDatabaseError(error, 0);
     }
   }
 
@@ -136,7 +144,6 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
     const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
     return totalPages;
   } catch (error) {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch total number of books.");
+    return handleDatabaseError(error, 0);
   }
 }
