@@ -1,6 +1,6 @@
-import { fetchFilteredBooks } from "../lib/data";
-import Link from "next/link";
-import Tile from "./tile";
+import { fetchFilteredBooks } from '../lib/data';
+import Link from 'next/link';
+import Tile from './tile';
 
 interface Book {
   id: string;

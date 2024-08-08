@@ -1,6 +1,6 @@
-import { fetchBookById } from "../lib/data";
-import Link from "next/link";
-import Tile from "../components/tile";
+import { fetchBookById } from '../lib/data';
+import Link from 'next/link';
+import Tile from '../components/tile';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const book = await fetchBookById(params.id);
@@ -33,12 +33,12 @@ const StarRating = ({ rating }: { rating: number }) => {
 
   // Generate stars based on the rating
   const stars = Array.from({ length: totalStars }).map((_, index) => {
-    let fill = "white";
+    let fill = 'white';
     if (remainingRating >= 1) {
-      fill = "gold";
+      fill = 'gold';
       remainingRating -= 1;
     } else if (remainingRating > 0) {
-      fill = "half";
+      fill = 'half';
       remainingRating = 0;
     }
     return <SVGStar key={index} fill={fill} />;
@@ -47,8 +47,8 @@ const StarRating = ({ rating }: { rating: number }) => {
   return <div className="flex space-x-1">{stars}</div>;
 };
 
-const SVGStar = ({ fill = "none" }) => {
-  const fillColor = fill === "half" ? "url(#half)" : fill;
+const SVGStar = ({ fill = 'none' }) => {
+  const fillColor = fill === 'half' ? 'url(#half)' : fill;
 
   return (
     <svg

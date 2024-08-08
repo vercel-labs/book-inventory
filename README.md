@@ -1,6 +1,6 @@
 # Next.js Book Inventory
 
-Demo: https://next-books-search.vercel.app/
+Demo: https://next-books-search.vercel.app
 
 ## Deploy on Vercel
 

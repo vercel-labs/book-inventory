@@ -1,11 +1,14 @@
-import { db } from "@vercel/postgres";
-import fs from "fs";
-import path from "path";
-import Papa from "papaparse";
-import "../envConfig.mjs";
+import { db } from '@vercel/postgres';
+import fs from 'fs';
+import path from 'path';
+import Papa from 'papaparse';
+import { loadEnvConfig } from '@next/env';
+
+let rootDir = path.resolve(__dirname, '../');
+loadEnvConfig(rootDir);
 
 const parseCSV = async (filePath) => {
-  const csvFile = fs.readFileSync(path.resolve(filePath), "utf8");
+  const csvFile = fs.readFileSync(path.resolve(filePath), 'utf8');
   return new Promise((resolve) => {
     Papa.parse(csvFile, {
       header: true,
@@ -17,7 +20,6 @@ const parseCSV = async (filePath) => {
 };
 
 async function seed(client) {
-  // Creating the books table
   const createBooksTable = await client.sql`
     CREATE TABLE IF NOT EXISTS books (
       id SERIAL PRIMARY KEY,
@@ -34,7 +36,7 @@ async function seed(client) {
   `;
   console.log('Created "books" table');
 
-  const bookData = await parseCSV("./books.csv");
+  const bookData = await parseCSV('./books.csv');
 
   // Inserting book data into the books table
   const promises = bookData.map((book, index) => {
@@ -67,7 +69,7 @@ async function main() {
 
 main().catch((err) => {
   console.error(
-    "An error occurred while attempting to seed the database:",
-    err,
+    'An error occurred while attempting to seed the database:',
+    err
   );
 });

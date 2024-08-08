@@ -1,31 +1,31 @@
-import { sql } from "@vercel/postgres";
+import { sql } from '@vercel/postgres';
 
 const ITEMS_PER_PAGE = 30;
 
 function isTableMissing(error: any) {
   // PostgreSQL error code for "undefined table"
-  return error.code === "42P01";
+  return error.code === '42P01';
 }
 
 function handleDatabaseError(error: any, returnValue: any) {
   if (isTableMissing(error)) {
-    console.error("Database Error - Table missing:", error);
+    console.error('Database Error - Table missing:', error);
     return returnValue;
   } else {
-    console.error("Database Error:", error);
-    throw new Error("Failed to fetch books.");
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch books.');
   }
 }
 
 export async function fetchFilteredBooks(
   selectedAuthors: string[],
   query: string,
-  currentPage: number,
+  currentPage: number
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   if (selectedAuthors.length > 0) {
     try {
-      const authorsDelimited = selectedAuthors.join("|");
+      const authorsDelimited = selectedAuthors.join('|');
 
       const books = await sql`
                 SELECT ALL
@@ -107,7 +107,7 @@ export async function fetchAuthors() {
 export async function fetchPages(query: string, selectedAuthors: string[]) {
   if (selectedAuthors.length > 0) {
     try {
-      const authorsDelimited = selectedAuthors.join("|");
+      const authorsDelimited = selectedAuthors.join('|');
 
       const count = await sql`
       SELECT COUNT(*)
@@ -122,7 +122,7 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
             )
             `;
       const totalPages = Math.ceil(
-        Number(count.rows[0].count) / ITEMS_PER_PAGE,
+        Number(count.rows[0].count) / ITEMS_PER_PAGE
       );
       return totalPages;
     } catch (error) {

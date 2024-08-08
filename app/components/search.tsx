@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
-import { useState } from "react";
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
+import { useState } from 'react';
 
 export default function Search() {
   const [loading, setLoading] = useState(false);
@@ -12,11 +12,11 @@ export default function Search() {
   const pathname = usePathname();
   const handleSearch = useDebouncedCallback((term) => {
     const params = new URLSearchParams(searchParams);
-    params.set("page", "1");
+    params.set('page', '1');
     if (term) {
-      params.set("query", term);
+      params.set('query', term);
     } else {
-      params.delete("query");
+      params.delete('query');
     }
     replace(`${pathname}?${params.toString()}`);
     setLoading(false);
@@ -35,7 +35,7 @@ export default function Search() {
           setLoading(true);
           handleSearch(e.target.value);
         }}
-        defaultValue={searchParams.get("query")?.toString()}
+        defaultValue={searchParams.get('query')?.toString()}
       />
       {loading && (
         <div className="absolute right-3 h-full flex items-center justify-center bg-opacity-80 z-10">

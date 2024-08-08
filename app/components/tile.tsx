@@ -1,8 +1,8 @@
-"use client";
-import { useState } from "react";
-import Image from "next/image";
-import { BookSkeleton } from "./loading-skeleton";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { BookSkeleton } from './loading-skeleton';
+import { PhotoIcon } from '@heroicons/react/24/outline';
 
 const Tile = ({ src, title }: { src: string; title: string }) => {
   const [isOptimized, setIsOptimized] = useState(true);

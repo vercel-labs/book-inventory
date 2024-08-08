@@ -1,23 +1,23 @@
-import Grid from "./components/grid";
-import Panel from "./components/panel";
-import Search from "./components/search";
-import { Suspense } from "react";
-import { fetchAuthors } from "./lib/data";
-import { LoadingSkeleton } from "./components/loading-skeleton";
-import { fetchPages } from "./lib/data";
-import Pagination from "./components/pagination";
+import Grid from './components/grid';
+import Panel from './components/panel';
+import Search from './components/search';
+import { Suspense } from 'react';
+import { fetchAuthors } from './lib/data';
+import { LoadingSkeleton } from './components/loading-skeleton';
+import { fetchPages } from './lib/data';
+import Pagination from './components/pagination';
 
 export default async function Page({
   searchParams,
 }: {
   searchParams: { query?: string; author?: string | string[]; page?: string };
 }) {
-  const query = searchParams?.query || "";
+  const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
   const allAuthors = await fetchAuthors();
   const selectedAuthors = !searchParams.author
     ? []
-    : typeof searchParams.author === "string"
+    : typeof searchParams.author === 'string'
       ? [searchParams.author]
       : searchParams.author;
   const totalPages = await fetchPages(query, selectedAuthors);
@@ -29,14 +29,14 @@ export default async function Page({
           Database Setup Required
         </h2>
         <p className="text-gray-700">
-          Your database does not have a{" "}
+          Your database does not have a{' '}
           <code className="p-1 font-mono text-red-600 bg-gray-200 rounded">
             books
-          </code>{" "}
-          table. Please run the script{" "}
+          </code>{' '}
+          table. Please run the script{' '}
           <code className="p-1 font-mono text-green-600 bg-gray-200 rounded">
             npm run seed
-          </code>{" "}
+          </code>{' '}
           to create the table and seed it with data.
         </p>
       </div>

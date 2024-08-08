@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useOptimistic, useTransition, useState } from "react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { FunnelIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
+import { useRouter } from 'next/navigation';
+import { useOptimistic, useTransition, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { FunnelIcon } from '@heroicons/react/24/outline';
+import clsx from 'clsx';
 
 interface ExpandedSections {
   [key: string]: boolean;
@@ -33,7 +33,7 @@ export default function Panel({
       acc[firstLetter].push(author); // Add the author to the appropriate array
       return acc; // Return the updated accumulator
     },
-    {} as { [key: string]: string[] },
+    {} as { [key: string]: string[] }
   );
   const toggleSection = (letter: string): void => {
     setExpandedSections((prev: Record<string, boolean>) => ({
@@ -51,14 +51,14 @@ export default function Panel({
         <FunnelIcon className="w-4" />
         <div className="text-sm">Filter Authors</div>
         <ChevronDownIcon
-          className={clsx("w-4", { "rotate-180": isPanelVisible })}
+          className={clsx('w-4', { 'rotate-180': isPanelVisible })}
         />
       </button>
       <div
-        className={`mb-auto bg-white lg:rounded-md shadow-md lg:w-60 dark:shadow-gray-950/30 dark:bg-white/10 ${isPanelVisible ? "" : "hidden lg:block"}`}
+        className={`mb-auto bg-white lg:rounded-md shadow-md lg:w-60 dark:shadow-gray-950/30 dark:bg-white/10 ${isPanelVisible ? '' : 'hidden lg:block'}`}
       >
         <div
-          data-pending={pending ? "" : undefined}
+          data-pending={pending ? '' : undefined}
           className="lg:h-[70vh] h-80 overflow-auto"
         >
           <div className="p-4 ">
@@ -75,17 +75,17 @@ export default function Panel({
                     {letter} <span className="text-xs">({authors.length})</span>
                   </div>
                   <ChevronDownIcon
-                    className={clsx("w-4", {
-                      "rotate-180": expandedSections[letter],
+                    className={clsx('w-4', {
+                      'rotate-180': expandedSections[letter],
                     })}
                   />
                 </button>
                 <div
                   className={clsx(
-                    "overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1",
+                    'overflow-hidden transition-max-height duration-300 ease-in-out flex flex-col gap-1',
                     {
-                      "max-h-0": !expandedSections[letter],
-                    },
+                      'max-h-0': !expandedSections[letter],
+                    }
                   )}
                 >
                   {expandedSections[letter] &&
@@ -99,7 +99,7 @@ export default function Panel({
                           let newParams = new URLSearchParams(
                             newAuthors
                               .sort()
-                              .map((author) => ["author", author]),
+                              .map((author) => ['author', author])
                           );
 
                           startTransition(() => {

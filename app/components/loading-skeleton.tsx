@@ -1,4 +1,4 @@
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import { PhotoIcon } from '@heroicons/react/24/outline';
 
 export function LoadingSkeleton() {
   return (
@@ -19,7 +19,7 @@ export function LoadingSkeleton() {
 
 export function BookSkeleton() {
   const shimmer =
-    "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent dark:before:via-white/20 before:via-stone-100 before:to-transparent";
+    'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent dark:before:via-white/20 before:via-stone-100 before:to-transparent';
 
   return (
     <div className="absolute inset-0 flex items-center justify-center object-cover w-full h-full rounded-lg shadow-sm">
