@@ -24,7 +24,7 @@ export default async function Grid({
             <Link
               href={`/${book.id}`}
               key={book.id}
-              className="mb-auto transition ease-in-out rounded-lg hover:scale-110 bg-black/10 dark:bg-white/10"
+              className="mb-auto transition ease-in-out rounded-lg hover:scale-105 bg-black/10 dark:bg-white/10"
             >
               <div className="relative w-full aspect-[2/3]">
                 <Tile src={book.image!} title={book.title} />

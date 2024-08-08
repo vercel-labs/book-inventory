@@ -7,14 +7,14 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <div className="flex flex-col items-center w-full">
       <Link
-        className="p-3 mb-8 mr-auto rounded dark:text-white hover:font-bold hover:opacity-80"
+        className="p-3 mb-8 mr-auto rounded dark:text-white hover:opacity-80"
         href="/"
       >
         ← Back to all books
       </Link>
       <div className="flex flex-col w-full md:flex-row">
         <div className="w-1/4 mr-6 flex-none relative aspect-[2/3] mb-6">
-          <Tile src={book.image} title={book.title} />
+          <Tile src={book.image!} title={book.title} />
         </div>
         <div>
           <div className="mb-2 text-5xl font-bold">{book.title}</div>

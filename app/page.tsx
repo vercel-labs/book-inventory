@@ -1,6 +1,6 @@
 import Grid from './components/grid';
 import Panel from './components/panel';
-import Search from './components/search';
+import { Search } from './components/search';
 import { Suspense } from 'react';
 import { fetchAuthors } from './lib/data';
 import { LoadingSkeleton } from './components/loading-skeleton';

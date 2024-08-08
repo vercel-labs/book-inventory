@@ -7,7 +7,7 @@ import { useFormStatus } from 'react-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
 
-export default function Search() {
+export function Search() {
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLFormElement | null>(null);
 
