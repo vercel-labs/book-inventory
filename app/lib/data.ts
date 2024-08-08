@@ -1,4 +1,4 @@
-import { eq, ilike, and, or, sql, desc } from 'drizzle-orm';
+import { eq, ilike, and, or, sql, desc, count } from 'drizzle-orm';
 import { books, db } from './db';
 
 const ITEMS_PER_PAGE = 30;
@@ -24,7 +24,8 @@ export async function fetchFilteredBooks(
     )
     .orderBy(desc(books.createdAt))
     .limit(ITEMS_PER_PAGE)
-    .offset(offset);
+    .offset(offset)
+    .$dynamic();
 
   if (selectedAuthors.length > 0) {
     baseQuery = baseQuery.where(
@@ -41,6 +42,7 @@ export async function fetchBookById(id: string) {
     .from(books)
     .where(eq(books.id, parseInt(id)))
     .limit(1);
+
   return result[0];
 }
 
@@ -50,12 +52,13 @@ export async function fetchAuthors() {
     .from(books)
     .groupBy(books.author)
     .orderBy(books.author);
+
   return result.map((row) => row.author);
 }
 
 export async function fetchPages(query: string, selectedAuthors: string[]) {
   let baseQuery = db
-    .select({ count: sql<number>`count(*)` })
+    .select({ count: count() })
     .from(books)
     .where(
       or(
@@ -65,7 +68,8 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
         ilike(books.publisher, `%${query}%`),
         sql`${books.year}::text ILIKE ${`%${query}%`}`
       )
-    );
+    )
+    .$dynamic();
 
   if (selectedAuthors.length > 0) {
     baseQuery = baseQuery.where(
