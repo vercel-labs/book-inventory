@@ -53,6 +53,10 @@ export async function fetchAuthors() {
     .groupBy(books.author)
     .orderBy(books.author);
 
+  if (result.length == 0) {
+    throw new Error('Database setup incomplete');
+  }
+
   return result.map((row) => row.author);
 }
 
