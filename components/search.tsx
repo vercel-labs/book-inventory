@@ -1,11 +1,12 @@
 'use client';
 
 import Form from 'next/form';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useSearchParams } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
+import { SearchIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export function Search() {
   let searchParams = useSearchParams();
@@ -24,22 +25,23 @@ export function Search() {
     <Form
       ref={formRef}
       action="/"
-      className="relative flex flex-1 flex-shrink-0 w-full text-black"
+      className="relative flex flex-1 flex-shrink-0 w-full"
     >
       <label htmlFor="search" className="sr-only">
         Search
       </label>
-      <input
+      <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Input
         onChange={handleInputChange}
         key={searchParams?.get('q')}
         type="text"
         name="q"
+        id="search"
         placeholder="Search books..."
         defaultValue={searchParams?.get('q') || ''}
-        className="peer block w-full rounded-md bg-white border border-gray-300 py-[9px] pl-10 placeholder:text-gray-500"
+        className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0"
       />
       <LoadingIcon />
-      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
     </Form>
   );
 }

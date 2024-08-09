@@ -1,11 +1,11 @@
-import { fetchBookById } from '../lib/data';
 import Link from 'next/link';
-import { Photo } from '../components/photo';
+import { fetchBookById } from '@/lib/data';
+import { Photo } from '@/components/photo';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const book = await fetchBookById(params.id);
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full p-4">
       <Link
         className="p-3 mb-8 mr-auto rounded dark:text-white hover:opacity-80"
         href="/"
