@@ -1,4 +1,4 @@
-import { eq, ilike, and, or, sql, desc, count } from 'drizzle-orm';
+import { eq, ilike, or, sql, desc, count } from 'drizzle-orm';
 import { books, db } from './db';
 
 const ITEMS_PER_PAGE = 30;
@@ -8,7 +8,7 @@ export async function fetchFilteredBooks(
   query: string,
   currentPage: number
 ) {
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  let offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   let baseQuery = db
     .select()
@@ -28,8 +28,10 @@ export async function fetchFilteredBooks(
     .$dynamic();
 
   if (selectedAuthors.length > 0) {
+    const authorsDelimited = selectedAuthors.join('|');
+
     baseQuery = baseQuery.where(
-      and(sql`${books.author} = ANY(${selectedAuthors})`)
+      sql`${books.author} = ANY(STRING_TO_ARRAY(${authorsDelimited}, '|'))`
     );
   }
 
@@ -37,7 +39,7 @@ export async function fetchFilteredBooks(
 }
 
 export async function fetchBookById(id: string) {
-  const result = await db
+  let result = await db
     .select()
     .from(books)
     .where(eq(books.id, parseInt(id)))
@@ -47,7 +49,7 @@ export async function fetchBookById(id: string) {
 }
 
 export async function fetchAuthors() {
-  const result = await db
+  let result = await db
     .select({ author: books.author })
     .from(books)
     .groupBy(books.author)
@@ -76,12 +78,14 @@ export async function fetchPages(query: string, selectedAuthors: string[]) {
     .$dynamic();
 
   if (selectedAuthors.length > 0) {
+    const authorsDelimited = selectedAuthors.join('|');
+
     baseQuery = baseQuery.where(
-      and(sql`${books.author} = ANY(${selectedAuthors})`)
+      sql`${books.author} = ANY(STRING_TO_ARRAY(${authorsDelimited}, '|'))`
     );
   }
 
-  const result = await baseQuery;
-  const totalPages = Math.ceil(result[0].count / ITEMS_PER_PAGE);
+  let result = await baseQuery;
+  let totalPages = Math.ceil(result[0].count / ITEMS_PER_PAGE);
   return totalPages;
 }

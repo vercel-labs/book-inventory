@@ -1,6 +1,6 @@
 import { fetchBookById } from '../lib/data';
 import Link from 'next/link';
-import Tile from '../components/tile';
+import { Photo } from '../components/photo';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const book = await fetchBookById(params.id);
@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       </Link>
       <div className="flex flex-col w-full md:flex-row">
         <div className="w-1/4 mr-6 flex-none relative aspect-[2/3] mb-6">
-          <Tile src={book.image!} title={book.title} />
+          <Photo src={book.image!} title={book.title} />
         </div>
         <div>
           <div className="mb-2 text-5xl font-bold">{book.title}</div>
@@ -59,8 +59,8 @@ const SVGStar = ({ fill = 'none' }) => {
     >
       <defs>
         <linearGradient id="half">
-          <stop offset="50%" stop-color="gold" />
-          <stop offset="50%" stop-color="white" />
+          <stop offset="50%" stopColor="gold" />
+          <stop offset="50%" stopColor="white" />
         </linearGradient>
       </defs>
       <path

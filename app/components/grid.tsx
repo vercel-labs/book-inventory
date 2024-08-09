@@ -1,6 +1,6 @@
 import { fetchFilteredBooks } from '../lib/data';
 import Link from 'next/link';
-import Tile from './tile';
+import { Photo } from './photo';
 
 export default async function Grid({
   selectedAuthors,
@@ -27,7 +27,7 @@ export default async function Grid({
               className="mb-auto transition ease-in-out rounded-lg hover:scale-105 bg-black/10 dark:bg-white/10"
             >
               <div className="relative w-full aspect-[2/3]">
-                <Tile src={book.image!} title={book.title} />
+                <Photo src={book.image!} title={book.title} />
               </div>
             </Link>
           ))

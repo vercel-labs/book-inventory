@@ -8,10 +8,10 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
 
 export function Search() {
-  const searchParams = useSearchParams();
-  const formRef = useRef<HTMLFormElement | null>(null);
+  let searchParams = useSearchParams();
+  let formRef = useRef<HTMLFormElement | null>(null);
 
-  const handleInputChange = useDebouncedCallback((e) => {
+  let handleInputChange = useDebouncedCallback((e) => {
     e.preventDefault();
     formRef.current?.requestSubmit();
   }, 300);
@@ -36,7 +36,7 @@ export function Search() {
         name="q"
         placeholder="Search books..."
         defaultValue={searchParams?.get('q') || ''}
-        className="peer block w-full rounded-md bg-white border border-gray-300 py-[9px] pl-10 text-sm placeholder:text-gray-500"
+        className="peer block w-full rounded-md bg-white border border-gray-300 py-[9px] pl-10 placeholder:text-gray-500"
       />
       <LoadingIcon />
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
@@ -45,7 +45,7 @@ export function Search() {
 }
 
 function LoadingIcon() {
-  const { pending } = useFormStatus();
+  let { pending } = useFormStatus();
 
   return pending ? (
     <div className="absolute right-3 top-1/2 -translate-y-1/2">
