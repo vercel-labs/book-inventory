@@ -15,7 +15,7 @@ export function Search() {
   let handleInputChange = useDebouncedCallback((e) => {
     e.preventDefault();
     formRef.current?.requestSubmit();
-  }, 300);
+  }, 200);
 
   useEffect(() => {
     formRef.current?.querySelector('input')?.focus();
