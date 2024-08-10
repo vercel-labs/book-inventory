@@ -10,26 +10,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   sidebar,
-  grid,
+  search,
   children,
 }: Readonly<{
   sidebar: React.ReactNode;
-  grid: React.ReactNode;
+  search: React.ReactNode;
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
+          'min-h-screen bg-white font-sans antialiased dark:bg-black dark:text-white',
           GeistSans.variable
         )}
       >
         <div className="flex h-screen w-full overflow-hidden">
-          {sidebar}
+          <div className="hidden md:block">{sidebar}</div>
           <div className="flex flex-1 flex-col">
-            <div className="border-b">{children}</div>
-            <div className="flex-1 flex flex-col overflow-hidden">{grid}</div>
+            <div className="border-b">{search}</div>
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {children}
+            </div>
           </div>
         </div>
       </body>

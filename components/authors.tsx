@@ -1,23 +1,42 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {
-  useOptimistic,
-  useTransition,
-  useState,
-  useCallback,
-  useMemo,
-} from 'react';
+import { useOptimistic, useTransition, useState, useCallback } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { ChevronRight, ChevronDown, Filter, X } from 'lucide-react';
+import { ChevronRight, Filter, X } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+
+function filterAuthors(authors: string[], filterText: string) {
+  return authors.filter((author) =>
+    author.toLowerCase().includes(filterText.toLowerCase())
+  );
+}
+
+function createAuthorGroups(authors: string[]) {
+  const groups: Record<string, string[]> = {};
+  for (let i = 65; i <= 90; i++) {
+    groups[String.fromCharCode(i)] = [];
+  }
+  groups['Other'] = [];
+
+  authors.forEach((author) => {
+    const firstLetter = author[0].toUpperCase();
+    if (firstLetter >= 'A' && firstLetter <= 'Z') {
+      groups[firstLetter].push(author);
+    } else {
+      groups['Other'].push(author);
+    }
+  });
+
+  return groups;
+}
 
 interface SidebarProps {
   selectedAuthors: string[];
@@ -29,33 +48,10 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   const [pending, startTransition] = useTransition();
   const [optimisticAuthors, setOptimisticAuthors] =
     useOptimistic(selectedAuthors);
-  const [isPanelVisible, setPanelVisibility] = useState(false);
   const [filterText, setFilterText] = useState('');
 
-  const filteredAuthors = useMemo(() => {
-    return allAuthors.filter((author) =>
-      author.toLowerCase().includes(filterText.toLowerCase())
-    );
-  }, [allAuthors, filterText]);
-
-  const authorGroups = useMemo(() => {
-    const groups: Record<string, string[]> = {};
-    for (let i = 65; i <= 90; i++) {
-      groups[String.fromCharCode(i)] = [];
-    }
-    groups['Other'] = [];
-
-    filteredAuthors.forEach((author) => {
-      const firstLetter = author[0].toUpperCase();
-      if (firstLetter >= 'A' && firstLetter <= 'Z') {
-        groups[firstLetter].push(author);
-      } else {
-        groups['Other'].push(author);
-      }
-    });
-
-    return groups;
-  }, [filteredAuthors]);
+  const filteredAuthors = filterAuthors(allAuthors, filterText);
+  const authorGroups = createAuthorGroups(filteredAuthors);
 
   const handleAuthorToggle = useCallback(
     (author: string) => {
@@ -97,20 +93,7 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
           <Filter className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
-      <Button
-        variant="ghost"
-        className="flex items-center w-full py-2 lg:hidden"
-        onClick={() => setPanelVisibility(!isPanelVisible)}
-      >
-        <Filter className="w-4 h-4 mr-2" />
-        <span>Filter Authors</span>
-        <ChevronDown
-          className={`w-4 h-4 ml-auto transition-transform duration-200 ${isPanelVisible ? 'rotate-180' : ''}`}
-        />
-      </Button>
-      <ScrollArea
-        className={`flex-grow ${isPanelVisible ? '' : 'hidden lg:block'}`}
-      >
+      <ScrollArea className="flex-grow">
         <div className="p-4">
           {Object.entries(authorGroups).map(
             ([letter, authors]) =>
