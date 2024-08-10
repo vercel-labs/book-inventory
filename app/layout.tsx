@@ -1,25 +1,39 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { cn } from '@/lib/utils';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Book Inventory",
-  description: "A simple book inventory app.",
+  title: 'Book Inventory',
+  description: 'A simple book inventory app.',
 };
 
 export default function RootLayout({
+  sidebar,
+  search,
   children,
 }: Readonly<{
+  sidebar: React.ReactNode;
+  search: React.ReactNode;
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body
-        className={`${inter.className} dark:text-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 dark:bg-black bg-stone-100`}
+        className={cn(
+          'min-h-screen bg-white font-sans antialiased dark:bg-black dark:text-white',
+          GeistSans.variable
+        )}
       >
-        <div>{children}</div>
+        <div className="flex h-screen w-full overflow-hidden">
+          <div className="hidden md:block">{sidebar}</div>
+          <div className="flex flex-1 flex-col">
+            <div className="border-b">{search}</div>
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {children}
+            </div>
+          </div>
+        </div>
       </body>
     </html>
   );
