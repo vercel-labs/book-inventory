@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { fetchBookById } from '@/lib/data';
-import { Photo } from '@/components/photo';
+import { Photo } from '@/components/grid';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const book = await fetchBookById(params.id);
+
   return (
     <div className="flex flex-col items-center w-full p-4">
       <Link
