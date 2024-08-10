@@ -1,12 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { GeistSans } from 'geist/font/sans';
 import { cn } from '@/lib/utils';
 import './globals.css';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
 
 export const metadata: Metadata = {
   title: 'Book Inventory',
@@ -27,14 +22,14 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
-          inter.variable
+          GeistSans.variable
         )}
       >
         <div className="flex h-screen w-full overflow-hidden">
           {sidebar}
           <div className="flex flex-1 flex-col">
             <div className="border-b">{children}</div>
-            {grid}
+            <div className="flex-1 flex flex-col overflow-hidden">{grid}</div>
           </div>
         </div>
       </body>

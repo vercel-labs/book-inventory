@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { fetchPages } from '@/lib/data';
 import { BooksGrid } from '@/components/grid';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { LoadingSkeleton } from '@/components/loading-skeleton';
 import { BookPagination } from '@/components/book-pagination';
 
@@ -20,19 +19,21 @@ export default async function Page({
   const totalPages = await fetchPages(query, selectedAuthors);
 
   return (
-    <ScrollArea className="flex-1">
-      <div className="p-4">
-        <Suspense fallback={<LoadingSkeleton />}>
-          <BooksGrid
-            selectedAuthors={selectedAuthors}
-            query={query}
-            page={currentPage}
-          />
-        </Suspense>
-        <div className="mt-8 flex justify-center">
-          <BookPagination totalPages={totalPages} />
+    <div className="flex flex-col h-full">
+      <div className="flex-grow overflow-auto min-h-[200px]">
+        <div className="p-4">
+          <Suspense fallback={<LoadingSkeleton />}>
+            <BooksGrid
+              selectedAuthors={selectedAuthors}
+              query={query}
+              page={currentPage}
+            />
+          </Suspense>
         </div>
       </div>
-    </ScrollArea>
+      <div className="mt-auto p-4 border-t">
+        <BookPagination totalPages={totalPages} />
+      </div>
+    </div>
   );
 }

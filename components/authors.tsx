@@ -85,7 +85,7 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   return (
     <div className="w-[300px] flex-shrink-0 border-r flex flex-col h-full">
       <div className="p-4 border-b">
-        <h2 className="mb-2 text-lg font-semibold">Authors</h2>
+        <h2 className="mb-2 text-lg font-semibold tracking-tight">Authors</h2>
         <div className="relative">
           <Input
             type="text"
