@@ -1,15 +1,13 @@
 'use client';
 
 import Form from 'next/form';
-import { useSearchParams } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-export function Search() {
-  let searchParams = useSearchParams();
+export function Search({ query }: { query: string }) {
   let formRef = useRef<HTMLFormElement | null>(null);
 
   let handleInputChange = useDebouncedCallback((e) => {
@@ -33,12 +31,12 @@ export function Search() {
       <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         onChange={handleInputChange}
-        key={searchParams?.get('q')}
+        key={query}
         type="text"
         name="q"
         id="search"
         placeholder="Search books..."
-        defaultValue={searchParams?.get('q') || ''}
+        defaultValue={query}
         className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0"
       />
       <LoadingIcon />

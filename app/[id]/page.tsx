@@ -27,7 +27,11 @@ export default async function Page({ params }: { params: { id: string } }) {
   );
 }
 
-const StarRating = ({ rating }: { rating: number }) => {
+const StarRating = ({ rating }: { rating: number | null }) => {
+  if (rating === null) {
+    return null;
+  }
+
   const totalStars = 5;
   let remainingRating = rating;
 
