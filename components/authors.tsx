@@ -81,7 +81,7 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
         const newParams = new URLSearchParams(
           newAuthors.map((author) => ['author', author])
         );
-        router.push(`?${newParams}`);
+        router.push(`/?${newParams}`);
       });
     },
     [optimisticAuthors, router, allAuthors]
