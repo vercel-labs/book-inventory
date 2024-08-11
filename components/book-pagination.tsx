@@ -23,16 +23,37 @@ export function BookPagination({
     return `?${params.toString()}`;
   };
 
-  const shouldShowPage = (pageNumber: number) => {
-    return (
-      pageNumber === 1 ||
-      pageNumber === totalPages ||
-      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-    );
-  };
+  const getPageNumbers = () => {
+    const pageNumbers = [];
 
-  const shouldShowEllipsis = (pageNumber: number) => {
-    return pageNumber === currentPage - 2 || pageNumber === currentPage + 2;
+    // Always add first page
+    pageNumbers.push(1);
+
+    // Add ellipsis if current page is far from the start
+    if (currentPage > 3) {
+      pageNumbers.push('...');
+    }
+
+    // Add current page and adjacent pages
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
+      pageNumbers.push(i);
+    }
+
+    // Add ellipsis if current page is far from the end
+    if (currentPage < totalPages - 2) {
+      pageNumbers.push('...');
+    }
+
+    // Always add last page if it's not already included
+    if (totalPages > 1 && !pageNumbers.includes(totalPages)) {
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
   };
 
   return (
@@ -44,24 +65,20 @@ export function BookPagination({
             aria-disabled={currentPage <= 1}
           />
         </PaginationItem>
-        {[...Array(totalPages)].map((_, i) => {
-          const pageNumber = i + 1;
-          if (shouldShowPage(pageNumber)) {
-            return (
-              <PaginationItem key={pageNumber}>
-                <PaginationLink
-                  href={createPageURL(pageNumber)}
-                  isActive={pageNumber === currentPage}
-                >
-                  {pageNumber}
-                </PaginationLink>
-              </PaginationItem>
-            );
-          } else if (shouldShowEllipsis(pageNumber)) {
-            return <PaginationEllipsis key={i} />;
-          }
-          return null;
-        })}
+        {getPageNumbers().map((pageNumber, index) => (
+          <PaginationItem key={index}>
+            {pageNumber === '...' ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                href={createPageURL(pageNumber as number)}
+                isActive={pageNumber === currentPage}
+              >
+                {pageNumber}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
         <PaginationItem>
           <PaginationNext
             href={createPageURL(currentPage + 1)}
