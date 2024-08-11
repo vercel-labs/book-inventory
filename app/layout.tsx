@@ -21,11 +21,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          'min-h-screen bg-white font-sans antialiased dark:bg-black dark:text-white',
+          'min-h-[calc(100dvh)] bg-white font-sans antialiased dark:bg-black dark:text-white',
           GeistSans.variable
         )}
       >
-        <div className="flex h-screen w-full overflow-hidden">
+        <div className="flex h-[calc(100dvh)] w-full overflow-hidden">
           <div className="hidden md:block">{sidebar}</div>
           <div className="flex flex-1 flex-col">
             <div className="border-b">{search}</div>
