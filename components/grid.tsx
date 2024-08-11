@@ -1,27 +1,19 @@
-import { fetchFilteredBooks } from '@/lib/data';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ImageIcon } from 'lucide-react';
+import { books } from '@/lib/db';
 
-export async function BooksGrid({
-  selectedAuthors,
-  query,
-  page,
-}: {
-  selectedAuthors: string[];
-  query: string;
-  page: number;
-}) {
-  const data = await fetchFilteredBooks(selectedAuthors, query, page);
+type SelectBook = typeof books.$inferSelect;
 
+export async function BooksGrid({ books }: { books: SelectBook[] }) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {!data?.length ? (
+      {!books?.length ? (
         <p className="text-center text-muted-foreground col-span-full">
           No books found.
         </p>
       ) : (
-        data.map((book) => (
+        books.map((book) => (
           <Link
             href={`/${book.id}`}
             key={book.id}

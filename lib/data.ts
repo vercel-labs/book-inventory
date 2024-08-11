@@ -1,41 +1,69 @@
-import { eq, ilike, or, sql, desc, count } from 'drizzle-orm';
+import { eq, ilike, or, and, sql, desc, count } from 'drizzle-orm';
 import { books, db } from './db';
 
 const ITEMS_PER_PAGE = 30;
 
-export async function fetchFilteredBooks(
-  selectedAuthors: string[],
-  query: string,
-  currentPage: number
-) {
-  let offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  let baseQuery = db
-    .select()
-    .from(books)
-    .where(
-      or(
-        ilike(books.isbn, `%${query}%`),
-        ilike(books.title, `%${query}%`),
-        ilike(books.author, `%${query}%`),
-        ilike(books.publisher, `%${query}%`),
-        sql`${books.year}::text ILIKE ${`%${query}%`}`
-      )
-    )
-    .orderBy(desc(books.createdAt))
-    .limit(ITEMS_PER_PAGE)
-    .offset(offset)
-    .$dynamic();
-
-  if (selectedAuthors.length > 0) {
-    const authorsDelimited = selectedAuthors.join('|');
-
-    baseQuery = baseQuery.where(
-      sql`${books.author} = ANY(STRING_TO_ARRAY(${authorsDelimited}, '|'))`
-    );
+export async function fetchBooksWithPagination(searchParams: {
+  q?: string;
+  author?: string | string[];
+  page?: string;
+}) {
+  let query = searchParams?.q || '';
+  let currentPage = Number(searchParams?.page) || 1;
+  if (currentPage < 1) {
+    currentPage = 1;
   }
 
-  return await baseQuery;
+  // Parse the author parameter
+  let selectedAuthors = !searchParams.author
+    ? []
+    : typeof searchParams.author === 'string'
+      ? searchParams.author
+          .split(',')
+          .map((author) => decodeURIComponent(author.trim()))
+      : searchParams.author.map((author) => decodeURIComponent(author.trim()));
+
+  let whereClause = or(
+    ilike(books.isbn, `%${query}%`),
+    ilike(books.title, `%${query}%`),
+    ilike(books.publisher, `%${query}%`),
+    sql`${books.year}::text ILIKE ${`%${query}%`}`
+  );
+
+  if (selectedAuthors.length > 0) {
+    let authorConditions = selectedAuthors.map((author) =>
+      ilike(books.author, `%${author}%`)
+    );
+    whereClause = and(whereClause, or(...authorConditions));
+  }
+
+  let countResult = await db
+    .select({ total: count() })
+    .from(books)
+    .where(whereClause);
+
+  let totalItems = Number(countResult[0].total);
+  let totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+  let offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  let paginatedBooks = await db
+    .select()
+    .from(books)
+    .where(whereClause)
+    .orderBy(desc(books.createdAt))
+    .limit(ITEMS_PER_PAGE)
+    .offset(offset);
+
+  return {
+    books: paginatedBooks,
+    pagination: {
+      currentPage,
+      totalPages,
+      totalItems,
+    },
+  };
 }
 
 export async function fetchBookById(id: string) {
@@ -60,32 +88,4 @@ export async function fetchAuthors() {
   }
 
   return result.map((row) => row.author);
-}
-
-export async function fetchPages(query: string, selectedAuthors: string[]) {
-  let baseQuery = db
-    .select({ count: count() })
-    .from(books)
-    .where(
-      or(
-        ilike(books.isbn, `%${query}%`),
-        ilike(books.title, `%${query}%`),
-        ilike(books.author, `%${query}%`),
-        ilike(books.publisher, `%${query}%`),
-        sql`${books.year}::text ILIKE ${`%${query}%`}`
-      )
-    )
-    .$dynamic();
-
-  if (selectedAuthors.length > 0) {
-    const authorsDelimited = selectedAuthors.join('|');
-
-    baseQuery = baseQuery.where(
-      sql`${books.author} = ANY(STRING_TO_ARRAY(${authorsDelimited}, '|'))`
-    );
-  }
-
-  let result = await baseQuery;
-  let totalPages = Math.ceil(result[0].count / ITEMS_PER_PAGE);
-  return totalPages;
 }

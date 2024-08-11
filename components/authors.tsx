@@ -1,7 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useOptimistic, useTransition, useState, useCallback } from 'react';
+import {
+  useOptimistic,
+  useTransition,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -46,8 +52,17 @@ interface SidebarProps {
 export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+
+  // Split the comma-separated strings into individual authors
+  const initialSelectedAuthors = useMemo(() => {
+    if (!selectedAuthors) return [];
+    return selectedAuthors.flatMap((author) =>
+      author.split(',').map((a) => a.trim())
+    );
+  }, [selectedAuthors]);
+
   const [optimisticAuthors, setOptimisticAuthors] = useOptimistic(
-    selectedAuthors || []
+    initialSelectedAuthors
   );
   const [filterText, setFilterText] = useState('');
 
@@ -114,9 +129,9 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
                   </CollapsibleTrigger>
                   {allAuthors && (
                     <CollapsibleContent className="ml-2 space-y-1">
-                      {authors.map((author) => (
+                      {authors.map((author, index) => (
                         <div
-                          key={author}
+                          key={author + index}
                           className="flex items-center space-x-2"
                         >
                           <Checkbox
@@ -144,9 +159,9 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
           <div className="mb-2 text-sm font-medium">Selected Authors:</div>
           <ScrollArea className="w-full whitespace-nowrap mb-2">
             <div className="flex space-x-2">
-              {optimisticAuthors.map((author) => (
+              {optimisticAuthors.map((author, index) => (
                 <Button
-                  key={author}
+                  key={author + index}
                   variant="secondary"
                   size="sm"
                   className="flex items-center shrink-0"
