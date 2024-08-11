@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
+import { Toaster } from 'sonner';
+import { WelcomeToast } from '@/components/welcome-toast';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -34,6 +36,8 @@ export default function RootLayout({
             </div>
           </div>
         </div>
+        <Toaster closeButton />
+        <WelcomeToast />
       </body>
     </html>
   );
