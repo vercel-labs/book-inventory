@@ -53,12 +53,9 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  // Split the comma-separated strings into individual authors
   const initialSelectedAuthors = useMemo(() => {
     if (!selectedAuthors) return [];
-    return selectedAuthors.flatMap((author) =>
-      author.split(',').map((a) => a.trim())
-    );
+    return selectedAuthors;
   }, [selectedAuthors]);
 
   const [optimisticAuthors, setOptimisticAuthors] = useOptimistic(
