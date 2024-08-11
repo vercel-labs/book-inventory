@@ -25,11 +25,9 @@ export async function BooksGrid({
           <Link
             href={`/${book.id}`}
             key={book.id}
-            className="mb-auto transition ease-in-out rounded-lg hover:scale-105 bg-muted"
+            className="block transition ease-in-out md:hover:scale-105"
           >
-            <div className="aspect-[2/3] overflow-hidden rounded-md">
-              <Photo src={book.image!} title={book.title} />
-            </div>
+            <Photo src={book.image!} title={book.title} />
           </Link>
         ))
       )}
@@ -39,19 +37,15 @@ export async function BooksGrid({
 
 export function Photo({ src, title }: { src: string; title: string }) {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-muted">
       {src ? (
         <Image
-          id="img"
           alt={title}
           src={src}
-          width={200}
-          height={300}
-          className="h-full w-full object-cover"
-          style={{
-            aspectRatio: '200/300',
-            objectFit: 'cover',
-          }}
+          fill
+          sizes="(min-width: 1280px) 16.67vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33.33vw, 50vw"
+          className="object-cover"
+          priority
         />
       ) : (
         <EmptyTile />

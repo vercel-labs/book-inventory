@@ -39,22 +39,26 @@ function createAuthorGroups(authors: string[]) {
 }
 
 interface SidebarProps {
-  selectedAuthors: string[];
-  allAuthors: string[];
+  selectedAuthors: string[] | null;
+  allAuthors: string[] | null;
 }
 
 export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [optimisticAuthors, setOptimisticAuthors] =
-    useOptimistic(selectedAuthors);
+  const [optimisticAuthors, setOptimisticAuthors] = useOptimistic(
+    selectedAuthors || []
+  );
   const [filterText, setFilterText] = useState('');
 
-  const filteredAuthors = filterAuthors(allAuthors, filterText);
+  const filteredAuthors = allAuthors
+    ? filterAuthors(allAuthors, filterText)
+    : [];
   const authorGroups = createAuthorGroups(filteredAuthors);
 
   const handleAuthorToggle = useCallback(
     (author: string) => {
+      if (!allAuthors) return;
       startTransition(() => {
         const newAuthors = optimisticAuthors.includes(author)
           ? optimisticAuthors.filter((a) => a !== author)
@@ -68,7 +72,7 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
         router.push(`?${newParams}`);
       });
     },
-    [optimisticAuthors, router]
+    [optimisticAuthors, router, allAuthors]
   );
 
   const handleClearAuthors = useCallback(() => {
@@ -97,38 +101,45 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
         <div className="p-4">
           {Object.entries(authorGroups).map(
             ([letter, authors]) =>
-              authors.length > 0 && (
+              (authors.length > 0 || !allAuthors) && (
                 <Collapsible key={letter}>
                   <CollapsibleTrigger className="flex items-center justify-between w-full p-2 mb-1 text-left hover:bg-accent rounded-md">
                     <span>
-                      {letter}{' '}
-                      <span className="text-xs">({authors.length})</span>
+                      {letter}
+                      {allAuthors && (
+                        <span className="text-xs"> ({authors.length})</span>
+                      )}
                     </span>
                     <ChevronRight className="w-4 h-4" />
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="ml-2 space-y-1">
-                    {authors.map((author) => (
-                      <div key={author} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={author}
-                          checked={optimisticAuthors.includes(author)}
-                          onCheckedChange={() => handleAuthorToggle(author)}
-                        />
-                        <label
-                          htmlFor={author}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  {allAuthors && (
+                    <CollapsibleContent className="ml-2 space-y-1">
+                      {authors.map((author) => (
+                        <div
+                          key={author}
+                          className="flex items-center space-x-2"
                         >
-                          {author}
-                        </label>
-                      </div>
-                    ))}
-                  </CollapsibleContent>
+                          <Checkbox
+                            id={author}
+                            checked={optimisticAuthors.includes(author)}
+                            onCheckedChange={() => handleAuthorToggle(author)}
+                          />
+                          <label
+                            htmlFor={author}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {author}
+                          </label>
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+                  )}
                 </Collapsible>
               )
           )}
         </div>
       </ScrollArea>
-      {optimisticAuthors.length > 0 && (
+      {allAuthors && optimisticAuthors.length > 0 && (
         <div className="p-4 border-t">
           <div className="mb-2 text-sm font-medium">Selected Authors:</div>
           <ScrollArea className="w-full whitespace-nowrap mb-2">

@@ -1,4 +1,7 @@
 export default {
+  experimental: {
+    ppr: true,
+  },
   logging: {
     fetches: {
       fullUrl: true,

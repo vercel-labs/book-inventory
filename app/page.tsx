@@ -30,7 +30,7 @@ export default async function Page({
       </div>
       <div className="mt-auto p-4 border-t">
         <Suspense fallback={null}>
-          <BookPagination totalPages={totalPages} />
+          <BookPagination totalPages={totalPages} searchParams={searchParams} />
         </Suspense>
       </div>
     </div>
