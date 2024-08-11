@@ -28,7 +28,7 @@ export function BookPagination({
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href={createPageURL(currentPage - 1)}
+            href={createPageURL(currentPage > 1 ? currentPage - 1 : 1)}
             aria-disabled={currentPage <= 1}
           />
         </PaginationItem>
@@ -59,7 +59,7 @@ export function BookPagination({
         })}
         <PaginationItem>
           <PaginationNext
-            href={createPageURL(currentPage + 1)}
+            href={createPageURL(currentPage < totalPages ? currentPage + 1 : totalPages)}
             aria-disabled={currentPage >= totalPages}
           />
         </PaginationItem>
