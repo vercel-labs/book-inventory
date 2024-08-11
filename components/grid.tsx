@@ -13,13 +13,13 @@ export async function BooksGrid({ books }: { books: SelectBook[] }) {
           No books found.
         </p>
       ) : (
-        books.map((book) => (
+        books.map((book, index) => (
           <Link
             href={`/${book.id}`}
             key={book.id}
             className="block transition ease-in-out md:hover:scale-105"
           >
-            <Photo src={book.image!} title={book.title} />
+            <Photo src={book.image!} title={book.title} priority={index < 4} />
           </Link>
         ))
       )}
@@ -27,7 +27,15 @@ export async function BooksGrid({ books }: { books: SelectBook[] }) {
   );
 }
 
-export function Photo({ src, title }: { src: string; title: string }) {
+export function Photo({
+  src,
+  title,
+  priority = false,
+}: {
+  src: string;
+  title: string;
+  priority?: boolean;
+}) {
   return (
     <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-muted">
       {src ? (
@@ -35,9 +43,9 @@ export function Photo({ src, title }: { src: string; title: string }) {
           alt={title}
           src={src}
           fill
-          sizes="(min-width: 1280px) 16.67vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33.33vw, 50vw"
+          sizes="(max-width: 639px) 50vw, (min-width: 640px) 33.33vw, (min-width: 768px) 25vw, (min-width: 1024px) 20vw, (min-width: 1280px) 16.67vw"
           className="object-cover"
-          priority
+          priority={priority}
         />
       ) : (
         <EmptyTile />
