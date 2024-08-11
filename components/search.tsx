@@ -36,7 +36,7 @@ export function Search({ query }: { query: string }) {
         id="search"
         placeholder="Search books..."
         defaultValue={query}
-        className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0"
+        className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0 text-base	md:text-sm"
       />
       <LoadingIcon />
     </Form>
