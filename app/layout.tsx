@@ -31,7 +31,7 @@ export default function RootLayout({
           <div className="hidden md:block">{sidebar}</div>
           <div className="flex flex-1 flex-col">
             <div className="border-b">{search}</div>
-            <div className="group-has-[[data-pending]]:animate-pulse flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden">
               {children}
             </div>
           </div>
