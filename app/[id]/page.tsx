@@ -1,5 +1,5 @@
 import { fetchBookById } from '@/lib/data';
-import { Photo } from '@/components/grid';
+import { Photo } from '@/components/photo';
 import { Star } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import BackButton from './back';

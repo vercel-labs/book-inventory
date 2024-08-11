@@ -51,7 +51,7 @@ interface SidebarProps {
 
 export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const initialSelectedAuthors = useMemo(() => {
     if (!selectedAuthors) return [];
@@ -95,7 +95,10 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
   }, [router]);
 
   return (
-    <div className="w-[300px] flex-shrink-0 border-r flex flex-col h-full">
+    <div
+      data-pending={isPending ? '' : undefined}
+      className="w-[300px] flex-shrink-0 border-r flex flex-col h-full"
+    >
       <div className="p-4 border-b">
         <h2 className="mb-2 text-lg font-semibold tracking-tight">Authors</h2>
         <div className="relative">
