@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
+import { sql } from 'drizzle-orm';
 import {
   pgTable,
   serial,
@@ -9,8 +10,8 @@ import {
   index,
 } from 'drizzle-orm/pg-core';
 
-const sql = neon(process.env.POSTGRES_URL!);
-export const db = drizzle(sql);
+const postgres = neon(process.env.POSTGRES_URL!);
+export const db = drizzle(postgres);
 
 export const books = pgTable(
   'books',
@@ -28,13 +29,10 @@ export const books = pgTable(
   },
   (table) => {
     return {
-      searchIdx: index('idx_books_search').on(
-        table.isbn,
-        table.title,
-        table.author,
-        table.publisher
+      searchIdx: index('idx_books_search_trigram').using(
+        'gin',
+        sql`(${table.isbn} gin_trgm_ops, ${table.title} gin_trgm_ops, ${table.author} gin_trgm_ops, ${table.publisher} gin_trgm_ops)`
       ),
-      yearIdx: index('idx_books_year').on(table.year),
       authorIdx: index('idx_books_author').on(table.author),
       createdAtIdx: index('idx_books_created_at').on(table.createdAt),
     };

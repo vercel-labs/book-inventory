@@ -1,4 +1,4 @@
-import { eq, ilike, or, and, sql, desc, count } from 'drizzle-orm';
+import { eq, sql, desc, count } from 'drizzle-orm';
 import { books, db } from './db';
 
 const ITEMS_PER_PAGE = 30;
@@ -9,32 +9,30 @@ export async function fetchBooksWithPagination(searchParams: {
   page?: string;
 }) {
   let query = searchParams?.q || '';
-  let currentPage = Number(searchParams?.page) || 1;
-  if (currentPage < 1) {
-    currentPage = 1;
-  }
+  let currentPage = Math.max(1, Number(searchParams?.page) || 1);
 
-  // Parse the author parameter
   let selectedAuthors = !searchParams.author
     ? []
-    : typeof searchParams.author === 'string'
-      ? searchParams.author
+    : Array.isArray(searchParams.author)
+      ? searchParams.author.map((author) => decodeURIComponent(author.trim()))
+      : searchParams.author
           .split(',')
-          .map((author) => decodeURIComponent(author.trim()))
-      : searchParams.author.map((author) => decodeURIComponent(author.trim()));
+          .map((author) => decodeURIComponent(author.trim()));
 
-  let whereClause = or(
-    ilike(books.isbn, `%${query}%`),
-    ilike(books.title, `%${query}%`),
-    ilike(books.publisher, `%${query}%`),
-    sql`${books.year}::text ILIKE ${`%${query}%`}`
-  );
+  let whereClause = sql`TRUE`;
+  if (query) {
+    whereClause = sql`(
+      ${books.isbn} % ${query} OR
+      ${books.title} % ${query} OR
+      ${books.publisher} % ${query}
+    )`;
+  }
 
   if (selectedAuthors.length > 0) {
-    let authorConditions = selectedAuthors.map((author) =>
-      ilike(books.author, `%${author}%`)
+    let authorConditions = selectedAuthors.map(
+      (author) => sql`${books.author} ILIKE ${`%${author}%`}`
     );
-    whereClause = and(whereClause, or(...authorConditions));
+    whereClause = sql`${whereClause} AND (${sql.join(authorConditions, sql` OR `)})`;
   }
 
   let countResult = await db
@@ -45,7 +43,7 @@ export async function fetchBooksWithPagination(searchParams: {
   let totalItems = Number(countResult[0].total);
   let totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+  currentPage = Math.min(currentPage, totalPages);
   let offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   let paginatedBooks = await db
