@@ -10,7 +10,11 @@ import {
   index,
 } from 'drizzle-orm/pg-core';
 
-const postgres = neon(process.env.POSTGRES_URL!);
+if (!process.env.POSTGRES_URL) {
+  throw new Error('POSTGRES_URL environment variable is not set');
+}
+
+const postgres = neon(process.env.POSTGRES_URL);
 export const db = drizzle(postgres);
 
 export const books = pgTable(
@@ -31,7 +35,7 @@ export const books = pgTable(
     return {
       searchIdx: index('idx_books_search_trigram').using(
         'gin',
-        sql`(${table.isbn} gin_trgm_ops, ${table.title} gin_trgm_ops, ${table.author} gin_trgm_ops, ${table.publisher} gin_trgm_ops)`
+        sql`(title gin_trgm_ops)`
       ),
       authorIdx: index('idx_books_author').on(table.author),
       createdAtIdx: index('idx_books_created_at').on(table.createdAt),

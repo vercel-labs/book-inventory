@@ -9,7 +9,7 @@ export async function fetchBooksWithPagination(searchParams: {
   page?: string;
 }) {
   let query = searchParams?.q || '';
-  let currentPage = Math.max(1, Number(searchParams?.page) || 1);
+  let requestedPage = Math.max(1, Number(searchParams?.page) || 1);
 
   let selectedAuthors = !searchParams.author
     ? []
@@ -21,16 +21,12 @@ export async function fetchBooksWithPagination(searchParams: {
 
   let whereClause = sql`TRUE`;
   if (query) {
-    whereClause = sql`(
-      ${books.isbn} % ${query} OR
-      ${books.title} % ${query} OR
-      ${books.publisher} % ${query}
-    )`;
+    whereClause = sql`${books.title} ILIKE ${`%${query}%`}`;
   }
 
   if (selectedAuthors.length > 0) {
     let authorConditions = selectedAuthors.map(
-      (author) => sql`${books.author} ILIKE ${`%${author}%`}`
+      (author) => sql`${books.author} = ${author}`
     );
     whereClause = sql`${whereClause} AND (${sql.join(authorConditions, sql` OR `)})`;
   }
@@ -41,9 +37,9 @@ export async function fetchBooksWithPagination(searchParams: {
     .where(whereClause);
 
   let totalItems = Number(countResult[0].total);
-  let totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  let totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
 
-  currentPage = Math.min(currentPage, totalPages);
+  let currentPage = Math.min(requestedPage, totalPages);
   let offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   let paginatedBooks = await db
