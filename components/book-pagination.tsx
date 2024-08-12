@@ -78,26 +78,46 @@ export function BookPagination({
             </Button>
           </Form>
         </PaginationItem>
-        {getPageNumbers().map((pageNumber, index) => (
-          <PaginationItem key={index}>
-            {pageNumber === '...' ? (
-              <PaginationEllipsis />
-            ) : (
-              <Form action="/">
-                <FormValues
-                  searchParams={searchParams}
-                  pageNumber={pageNumber as number}
-                />
-                <Button
-                  type="submit"
-                  variant={pageNumber === currentPage ? 'outline' : 'ghost'}
-                >
-                  {pageNumber}
-                </Button>
-              </Form>
-            )}
+
+        {/* Mobile View */}
+        <div className="flex md:hidden">
+          <PaginationItem>
+            <Form action="/">
+              <FormValues
+                searchParams={searchParams}
+                pageNumber={currentPage}
+              />
+              <Button type="submit" variant="outline">
+                {currentPage}
+              </Button>
+            </Form>
           </PaginationItem>
-        ))}
+        </div>
+
+        {/* Desktop View */}
+        <div className="hidden md:flex">
+          {getPageNumbers().map((pageNumber, index) => (
+            <PaginationItem key={index}>
+              {pageNumber === '...' ? (
+                <PaginationEllipsis />
+              ) : (
+                <Form action="/">
+                  <FormValues
+                    searchParams={searchParams}
+                    pageNumber={pageNumber as number}
+                  />
+                  <Button
+                    type="submit"
+                    variant={pageNumber === currentPage ? 'outline' : 'ghost'}
+                  >
+                    {pageNumber}
+                  </Button>
+                </Form>
+              )}
+            </PaginationItem>
+          ))}
+        </div>
+
         <PaginationItem>
           <Form action="/">
             <FormValues
