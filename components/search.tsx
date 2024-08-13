@@ -1,27 +1,19 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import {
-  useEffect,
-  useRef,
-  useState,
-  useDeferredValue,
-  useTransition,
-} from 'react';
+import { useEffect, useRef, useState, useDeferredValue } from 'react';
+import { useFormStatus } from 'react-dom';
+import Form from 'next/form';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import Form from 'next/form';
 
 export function Search({ query: initialQuery }: { query: string }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [query, setQuery] = useState(initialQuery);
-  const deferredQuery = useDeferredValue(query);
+  let [query, setQuery] = useState(initialQuery);
+  let deferredQuery = useDeferredValue(query);
+  let inputRef = useRef<HTMLInputElement>(null);
+  let formRef = useRef<HTMLFormElement>(null);
+  let isStale = query !== deferredQuery;
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(function () {
+  useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
       inputRef.current.focus();
       inputRef.current.setSelectionRange(
@@ -31,30 +23,16 @@ export function Search({ query: initialQuery }: { query: string }) {
     }
   }, []);
 
-  function handleSearch(search: string) {
-    setQuery(search);
-
-    startTransition(function () {
-      router.replace(`/?search=${encodeURIComponent(search)}`);
-    });
-  }
-
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value);
     formRef.current?.requestSubmit();
   }
 
-  const isStale = query !== deferredQuery;
-
   return (
     <Form
       ref={formRef}
       action="/"
-      onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        let search = (e.target as HTMLFormElement).search.value;
-        handleSearch(search);
-      }}
+      replace
       className="relative flex flex-1 flex-shrink-0 w-full"
     >
       <label htmlFor="search" className="sr-only">
@@ -71,15 +49,18 @@ export function Search({ query: initialQuery }: { query: string }) {
         value={query}
         className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0 text-base md:text-sm"
       />
-      <LoadingIcon pending={isPending || isStale} />
+      <LoadingIcon isStale={isStale} />
     </Form>
   );
 }
 
-function LoadingIcon({ pending }: { pending: boolean }) {
-  return pending ? (
+function LoadingIcon({ isStale }: { isStale: boolean }) {
+  let { pending } = useFormStatus();
+  let loading = pending || isStale;
+
+  return loading ? (
     <div
-      data-pending={pending ? '' : undefined}
+      data-pending={loading ? '' : undefined}
       className="absolute right-3 top-1/2 -translate-y-1/2"
     >
       <div
