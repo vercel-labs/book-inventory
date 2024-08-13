@@ -31,12 +31,11 @@ export function Search({ query: initialQuery }: { query: string }) {
     }
   }, []);
 
-  function handleSearch(formData: FormData) {
-    const newQuery = formData.get('search') as string;
-    setQuery(newQuery);
+  function handleSearch(search: string) {
+    setQuery(search);
 
     startTransition(function () {
-      router.replace(`/?search=${encodeURIComponent(newQuery)}`);
+      router.replace(`/?search=${encodeURIComponent(search)}`);
     });
   }
 
@@ -50,7 +49,12 @@ export function Search({ query: initialQuery }: { query: string }) {
   return (
     <Form
       ref={formRef}
-      action={handleSearch}
+      action="/"
+      onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        let search = (e.target as HTMLFormElement).search.value;
+        handleSearch(search);
+      }}
       className="relative flex flex-1 flex-shrink-0 w-full"
     >
       <label htmlFor="search" className="sr-only">
