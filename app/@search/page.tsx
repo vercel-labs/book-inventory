@@ -3,9 +3,9 @@ import { Search } from '@/components/search';
 export default function Page({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: { search?: string };
 }) {
-  const query = searchParams?.q || '';
+  const query = searchParams?.search || '';
 
   return <Search query={query} />;
 }

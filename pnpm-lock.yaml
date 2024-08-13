@@ -101,9 +101,6 @@ importers:
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
-      use-debounce:
-        specifier: ^10.0.0
-        version: 10.0.2(react@19.0.0-rc-e948a5ac-20240807)
 
 packages:
 
@@ -1695,12 +1692,6 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
-  use-debounce@10.0.2:
-    resolution: {integrity: sha512-MwBiJK2dk+2qhMDVDCPRPeLuIekKfH2t1UYMnrW9pwcJJGFDbTLliSMBz2UKGmE1PJs8l3XoMqbIU1MemMAJ8g==}
-    engines: {node: '>= 16.0.0'}
-    peerDependencies:
-      react: '>=16.8.0'
-
   utf-8-validate@6.0.3:
     resolution: {integrity: sha512-uIuGf9TWQ/y+0Lp+KGZCMuJWc3N9BHA+l/UmHd/oUHwJJDeysyTRxNQVkbzsIWfGFbRe3OcgML/i0mvVRPOyDA==}
     engines: {node: '>=6.14.2'}
@@ -3020,10 +3011,6 @@ snapshots:
       browserslist: 4.23.3
       escalade: 3.1.2
       picocolors: 1.0.1
-
-  use-debounce@10.0.2(react@19.0.0-rc-e948a5ac-20240807):
-    dependencies:
-      react: 19.0.0-rc-e948a5ac-20240807
 
   utf-8-validate@6.0.3:
     dependencies:
