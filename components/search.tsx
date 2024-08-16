@@ -46,7 +46,7 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
         id="search"
         placeholder="Search books..."
         defaultValue={initialQuery}
-        className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0 text-base md:text-sm"
+        className="w-full border-0 px-10 py-6 text-base md:text-sm overflow-hidden focus-visible:ring-0"
       />
       <LoadingIcon />
     </Form>
