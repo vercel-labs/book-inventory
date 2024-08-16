@@ -10,7 +10,7 @@ export default function Loading() {
               key={index}
               className="relative aspect-[2/3] w-full overflow-hidden rounded-md"
             >
-              <Skeleton className="absolute inset-0" />
+              <Skeleton className="absolute inset-0 bg-gray-200" />
             </div>
           ))}
         </div>

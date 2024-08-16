@@ -13,7 +13,7 @@ export function Photo({
   priority?: boolean;
 }) {
   return (
-    <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-muted">
+    <div className="relative aspect-[2/3] w-full overflow-hidden rounded-md bg-muted shadow-md">
       {src ? (
         <Image
           alt={title}

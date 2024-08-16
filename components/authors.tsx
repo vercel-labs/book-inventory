@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   useOptimistic,
   useTransition,
@@ -18,6 +18,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { FixedSizeList as List } from 'react-window';
 
 function filterAuthors(authors: string[], filterText: string) {
   return authors.filter((author) =>
@@ -44,23 +45,22 @@ function createAuthorGroups(authors: string[]) {
   return groups;
 }
 
-interface SidebarProps {
-  selectedAuthors: string[] | null;
+interface AuthorsProps {
   allAuthors: string[] | null;
+  searchParams: URLSearchParams;
 }
 
-export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
+function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const initialSelectedAuthors = useMemo(() => {
-    if (!selectedAuthors) return [];
-    return selectedAuthors;
-  }, [selectedAuthors]);
+  const selectedAuthors = useMemo(() => {
+    const authorParams = searchParams.getAll('author');
+    return authorParams.length > 0 ? authorParams : [];
+  }, [searchParams]);
 
-  const [optimisticAuthors, setOptimisticAuthors] = useOptimistic(
-    initialSelectedAuthors
-  );
+  const [optimisticAuthors, setOptimisticAuthors] =
+    useOptimistic(selectedAuthors);
   const [filterText, setFilterText] = useState('');
 
   const filteredAuthors = allAuthors
@@ -78,29 +78,30 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
 
         setOptimisticAuthors(newAuthors.sort());
 
-        const newParams = new URLSearchParams(
-          newAuthors.map((author) => ['author', author])
-        );
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('author');
+        newAuthors.forEach((author) => newParams.append('author', author));
         router.push(`/?${newParams}`);
       });
     },
-    [optimisticAuthors, router, allAuthors]
+    [optimisticAuthors, router, allAuthors, searchParams]
   );
 
   const handleClearAuthors = useCallback(() => {
     startTransition(() => {
       setOptimisticAuthors([]);
-      router.push('/');
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('author');
+      router.push(`/?${newParams}`);
     });
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <div
       data-pending={isPending ? '' : undefined}
-      className="w-[300px] flex-shrink-0 border-r flex flex-col h-full"
+      className="flex-shrink-0 flex flex-col h-full bg-white"
     >
-      <div className="p-4 border-b">
-        <h2 className="mb-2 text-lg font-semibold tracking-tight">Authors</h2>
+      <div>
         <div className="relative">
           <Input
             type="text"
@@ -112,8 +113,8 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
           <Filter className="w-4 h-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
         </div>
       </div>
-      <ScrollArea className="flex-grow">
-        <div className="p-4">
+      <ScrollArea className="flex-grow border-t mt-4">
+        <div className="py-2">
           {Object.entries(authorGroups).map(
             ([letter, authors]) =>
               (authors.length > 0 || !allAuthors) && (
@@ -129,24 +130,36 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
                   </CollapsibleTrigger>
                   {allAuthors && (
                     <CollapsibleContent className="ml-2 space-y-1">
-                      {authors.map((author, index) => (
-                        <div
-                          key={author + index}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={author}
-                            checked={optimisticAuthors.includes(author)}
-                            onCheckedChange={() => handleAuthorToggle(author)}
-                          />
-                          <label
-                            htmlFor={author}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            {author}
-                          </label>
-                        </div>
-                      ))}
+                      <List
+                        height={Math.min(authors.length * 30, 300)}
+                        itemCount={authors.length}
+                        itemSize={30}
+                        width="100%"
+                      >
+                        {({ index, style }) => {
+                          const author = authors[index];
+                          return (
+                            <div
+                              style={style}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`${letter}-${author}`}
+                                checked={optimisticAuthors.includes(author)}
+                                onCheckedChange={() =>
+                                  handleAuthorToggle(author)
+                                }
+                              />
+                              <label
+                                htmlFor={`${letter}-${author}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 truncate"
+                              >
+                                {author}
+                              </label>
+                            </div>
+                          );
+                        }}
+                      </List>
                     </CollapsibleContent>
                   )}
                 </Collapsible>
@@ -155,7 +168,7 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
         </div>
       </ScrollArea>
       {allAuthors && optimisticAuthors.length > 0 && (
-        <div className="p-4 border-t">
+        <div className="py-4 border-t">
           <div className="mb-2 text-sm font-medium">Selected Authors:</div>
           <ScrollArea className="w-full whitespace-nowrap mb-2">
             <div className="flex space-x-2">
@@ -185,4 +198,19 @@ export function Sidebar({ selectedAuthors, allAuthors }: SidebarProps) {
       )}
     </div>
   );
+}
+
+export function AuthorsFallback({
+  allAuthors,
+}: {
+  allAuthors: string[] | null;
+}) {
+  return (
+    <AuthorsBase allAuthors={allAuthors} searchParams={new URLSearchParams()} />
+  );
+}
+
+export function Authors({ allAuthors }: { allAuthors: string[] | null }) {
+  const searchParams = useSearchParams();
+  return <AuthorsBase allAuthors={allAuthors} searchParams={searchParams} />;
 }
