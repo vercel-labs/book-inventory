@@ -9,13 +9,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 function useSearch() {
   let router = useRouter();
-  let latestQuery = useRef('');
   let updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   let updateSearch = useCallback(
     (query: string) => {
-      latestQuery.current = query;
-
       if (updateTimeout.current) {
         clearTimeout(updateTimeout.current);
       }
@@ -27,15 +24,15 @@ function useSearch() {
     [router]
   );
 
-  return { updateSearch, latestQuery };
+  return { updateSearch };
 }
 
 function SearchBase({ initialQuery }: { initialQuery: string }) {
-  let { updateSearch, latestQuery } = useSearch();
+  let { updateSearch } = useSearch();
   let inputRef = useRef<HTMLInputElement>(null);
   let formRef = useRef<HTMLFormElement>(null);
 
-  let handleInputChange = (e) => {
+  let handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     updateSearch(e.target.value);
     formRef.current?.requestSubmit();
@@ -95,7 +92,7 @@ function LoadingSpinner() {
           strokeWidth="10"
           strokeDasharray="282.7"
           strokeDashoffset="282.7"
-          className={`${pending ? 'animate-fill-clock' : ''}`}
+          className={pending ? 'animate-fill-clock' : ''}
           transform="rotate(-90 50 50)"
         />
       </svg>
