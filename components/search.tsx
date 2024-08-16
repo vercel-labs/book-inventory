@@ -6,7 +6,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useSearchParams } from 'next/navigation';
 
 function SearchBase({ initialQuery }: { initialQuery: string }) {
   let inputRef = useRef<HTMLInputElement>(null);
