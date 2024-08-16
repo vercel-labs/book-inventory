@@ -77,7 +77,8 @@ export default {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'fill-clock': 'fillClock 6s linear, colorChange 6s linear',
+        'fill-clock':
+          'fillClock 6s linear forwards, colorChange 6s linear forwards',
       },
     },
   },

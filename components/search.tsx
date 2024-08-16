@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { cn } from '@/lib/utils';
 
 function useSearch() {
   let router = useRouter();
