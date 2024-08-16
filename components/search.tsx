@@ -8,12 +8,9 @@ import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useSearchParams } from 'next/navigation';
 
-interface SearchBaseProps {
-  initialQuery: string;
-}
-
-function SearchBase({ initialQuery }: SearchBaseProps) {
-  let formRef = useRef<HTMLFormElement | null>(null);
+function SearchBase({ initialQuery }: { initialQuery: string }) {
+  let inputRef = useRef<HTMLInputElement>(null);
+  let formRef = useRef<HTMLFormElement>(null);
 
   let handleInputChange = useDebouncedCallback((e) => {
     e.preventDefault();
@@ -21,13 +18,20 @@ function SearchBase({ initialQuery }: SearchBaseProps) {
   }, 200);
 
   useEffect(() => {
-    formRef.current?.querySelector('input')?.focus();
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.setSelectionRange(
+        inputRef.current.value.length,
+        inputRef.current.value.length
+      );
+    }
   }, []);
 
   return (
     <Form
       ref={formRef}
       action="/"
+      replace
       className="relative flex flex-1 flex-shrink-0 w-full rounded shadow-sm"
     >
       <label htmlFor="search" className="sr-only">
@@ -35,9 +39,10 @@ function SearchBase({ initialQuery }: SearchBaseProps) {
       </label>
       <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
+        ref={inputRef}
         onChange={handleInputChange}
         type="text"
-        name="q"
+        name="search"
         id="search"
         placeholder="Search books..."
         defaultValue={initialQuery}

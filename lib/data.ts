@@ -4,11 +4,11 @@ import { books, db } from './db';
 const ITEMS_PER_PAGE = 30;
 
 export async function fetchBooksWithPagination(searchParams: {
-  q?: string;
+  search?: string;
   author?: string | string[];
   page?: string;
 }) {
-  let query = searchParams?.q || '';
+  let query = searchParams?.search || '';
   let requestedPage = Math.max(1, Number(searchParams?.page) || 1);
 
   let selectedAuthors = !searchParams.author
