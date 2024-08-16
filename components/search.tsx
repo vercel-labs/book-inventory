@@ -6,8 +6,13 @@ import { useDebouncedCallback } from 'use-debounce';
 import { useEffect, useRef } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useSearchParams } from 'next/navigation';
 
-export function Search({ query }: { query: string }) {
+interface SearchBaseProps {
+  initialQuery: string;
+}
+
+function SearchBase({ initialQuery }: SearchBaseProps) {
   let formRef = useRef<HTMLFormElement | null>(null);
 
   let handleInputChange = useDebouncedCallback((e) => {
@@ -23,7 +28,7 @@ export function Search({ query }: { query: string }) {
     <Form
       ref={formRef}
       action="/"
-      className="relative flex flex-1 flex-shrink-0 w-full"
+      className="relative flex flex-1 flex-shrink-0 w-full rounded shadow-sm"
     >
       <label htmlFor="search" className="sr-only">
         Search
@@ -35,8 +40,8 @@ export function Search({ query }: { query: string }) {
         name="q"
         id="search"
         placeholder="Search books..."
-        defaultValue={query}
-        className="w-full rounded-none border-0 px-10 py-6 m-1 focus-visible:ring-0 text-base	md:text-sm"
+        defaultValue={initialQuery}
+        className="w-full border-0 px-10 py-6 text-base md:text-sm overflow-hidden focus-visible:ring-0"
       />
       <LoadingIcon />
     </Form>
@@ -59,4 +64,13 @@ function LoadingIcon() {
       </div>
     </div>
   ) : null;
+}
+
+export function SearchFallback() {
+  return <SearchBase initialQuery="" />;
+}
+
+export function Search() {
+  let query = useSearchParams().get('q') ?? '';
+  return <SearchBase initialQuery={query} />;
 }
