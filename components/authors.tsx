@@ -19,22 +19,23 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { FixedSizeList as List } from 'react-window';
+import { Author } from '@/lib/db/schema';
 
-function filterAuthors(authors: string[], filterText: string) {
+function filterAuthors(authors: Author[], filterText: string) {
   return authors.filter((author) =>
-    author.toLowerCase().includes(filterText.toLowerCase())
+    author.name.toLowerCase().includes(filterText.toLowerCase())
   );
 }
 
-function createAuthorGroups(authors: string[]) {
-  const groups: Record<string, string[]> = {};
+function createAuthorGroups(authors: Author[]) {
+  const groups: Record<string, Author[]> = {};
   for (let i = 65; i <= 90; i++) {
     groups[String.fromCharCode(i)] = [];
   }
   groups['Other'] = [];
 
   authors.forEach((author) => {
-    const firstLetter = author[0].toUpperCase();
+    const firstLetter = author.name[0].toUpperCase();
     if (firstLetter >= 'A' && firstLetter <= 'Z') {
       groups[firstLetter].push(author);
     } else {
@@ -46,7 +47,7 @@ function createAuthorGroups(authors: string[]) {
 }
 
 interface AuthorsProps {
-  allAuthors: string[] | null;
+  allAuthors: Author[];
   searchParams: URLSearchParams;
 }
 
@@ -69,12 +70,12 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
   const authorGroups = createAuthorGroups(filteredAuthors);
 
   const handleAuthorToggle = useCallback(
-    (author: string) => {
+    (authorId: string) => {
       if (!allAuthors) return;
       startTransition(() => {
-        const newAuthors = optimisticAuthors.includes(author)
-          ? optimisticAuthors.filter((a) => a !== author)
-          : [...optimisticAuthors, author];
+        const newAuthors = optimisticAuthors.includes(authorId)
+          ? optimisticAuthors.filter((a) => a !== authorId)
+          : [...optimisticAuthors, authorId];
 
         setOptimisticAuthors(newAuthors.sort());
 
@@ -107,15 +108,15 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
     return (
       <div style={style} className="flex items-center space-x-2">
         <Checkbox
-          id={author}
-          checked={optimisticAuthors.includes(author)}
-          onCheckedChange={() => handleAuthorToggle(author)}
+          id={author.id}
+          checked={optimisticAuthors.includes(author.id)}
+          onCheckedChange={() => handleAuthorToggle(author.id)}
         />
         <label
-          htmlFor={author}
+          htmlFor={author.id}
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 truncate"
         >
-          {author}
+          {author.name}
         </label>
       </div>
     );
@@ -175,18 +176,21 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
           <div className="mb-2 text-sm font-medium">Selected Authors:</div>
           <ScrollArea className="w-full whitespace-nowrap mb-2">
             <div className="flex space-x-2">
-              {optimisticAuthors.map((author, index) => (
-                <Button
-                  key={author + index}
-                  variant="secondary"
-                  size="sm"
-                  className="flex items-center shrink-0"
-                  onClick={() => handleAuthorToggle(author)}
-                >
-                  {author}
-                  <X className="w-3 h-3 ml-1" />
-                </Button>
-              ))}
+              {optimisticAuthors.map((authorId, index) => {
+                const author = allAuthors.find((a) => a.id === authorId);
+                return author ? (
+                  <Button
+                    key={authorId + index}
+                    variant="secondary"
+                    size="sm"
+                    className="flex items-center shrink-0"
+                    onClick={() => handleAuthorToggle(authorId)}
+                  >
+                    {author.name}
+                    <X className="w-3 h-3 ml-1" />
+                  </Button>
+                ) : null;
+              })}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -203,17 +207,13 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
   );
 }
 
-export function AuthorsFallback({
-  allAuthors,
-}: {
-  allAuthors: string[] | null;
-}) {
+export function AuthorsFallback({ allAuthors }: { allAuthors: Author[] }) {
   return (
     <AuthorsBase allAuthors={allAuthors} searchParams={new URLSearchParams()} />
   );
 }
 
-export function Authors({ allAuthors }: { allAuthors: string[] | null }) {
+export function Authors({ allAuthors }: { allAuthors: Author[] }) {
   const searchParams = useSearchParams();
   return <AuthorsBase allAuthors={allAuthors} searchParams={searchParams} />;
 }

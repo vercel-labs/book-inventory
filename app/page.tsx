@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { BooksGrid } from '@/components/grid';
 import { BookPagination } from '@/components/book-pagination';
-import { fetchBooksWithPagination } from '@/lib/data';
+import { fetchBooksWithPagination } from '@/lib/db/queries';
 
 export default async function Page({
   searchParams,

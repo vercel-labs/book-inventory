@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import { books } from '@/lib/db';
+import { SelectBook } from '@/lib/db/schema';
 import { Photo } from './photo';
-
-type SelectBook = typeof books.$inferSelect;
 
 export async function BooksGrid({ books }: { books: SelectBook[] }) {
   return (
@@ -18,7 +16,11 @@ export async function BooksGrid({ books }: { books: SelectBook[] }) {
             key={book.id}
             className="block transition ease-in-out md:hover:scale-105"
           >
-            <Photo src={book.image!} title={book.title} priority={index < 4} />
+            <Photo
+              src={book.image_url!}
+              title={book.title}
+              priority={index < 4}
+            />
           </Link>
         ))
       )}

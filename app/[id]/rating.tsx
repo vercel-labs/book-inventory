@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react';
 
-export function StarRating({ rating }: { rating: number | null }) {
+export function StarRating({ rating }: { rating: string | null }) {
   if (rating === null) return null;
 
   return (
@@ -9,9 +9,9 @@ export function StarRating({ rating }: { rating: number | null }) {
         <Star
           key={index}
           className={`w-6 h-6 ${
-            index < Math.floor(rating)
+            index < Math.floor(Number(rating))
               ? 'text-yellow-400 fill-current'
-              : index < Math.ceil(rating)
+              : index < Math.ceil(Number(rating))
                 ? 'text-yellow-400 fill-current half-star'
                 : 'text-gray-300'
           }`}

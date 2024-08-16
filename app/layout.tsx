@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 import { WelcomeToast } from '@/components/welcome-toast';
 import { cn } from '@/lib/utils';
 import { Authors, AuthorsFallback } from '@/components/authors';
-import { fetchAuthors } from '@/lib/data';
+import { fetchAuthors } from '@/lib/db/queries';
 import { Search, SearchFallback } from '@/components/search';
 import { Suspense } from 'react';
 
