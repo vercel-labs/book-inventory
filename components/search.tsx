@@ -2,57 +2,64 @@
 
 import Form from 'next/form';
 import { useFormStatus } from 'react-dom';
-import { useCallback, useEffect, useRef } from 'react';
+import { useRef, use, useEffect, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-function useSearch() {
-  let router = useRouter();
-  let updateTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  let updateSearch = useCallback(
-    (query: string) => {
-      if (updateTimeout.current) {
-        clearTimeout(updateTimeout.current);
-      }
-
-      updateTimeout.current = setTimeout(() => {
-        router.replace(`/?search=${encodeURIComponent(query)}`);
-      }, 400);
-    },
-    [router]
-  );
-
-  return { updateSearch };
-}
-
 function SearchBase({ initialQuery }: { initialQuery: string }) {
-  let { updateSearch } = useSearch();
+  let router = useRouter();
+  let [inputValue, setInputValue] = useState(initialQuery);
+  let latestUrlRef = useRef(`/?search=${encodeURIComponent(initialQuery)}`);
+  let isUpdatingRef = useRef(false);
   let inputRef = useRef<HTMLInputElement>(null);
   let formRef = useRef<HTMLFormElement>(null);
+  let updateCountRef = useRef(0);
 
-  let handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    updateSearch(e.target.value);
+  async function handleSubmit(formData: FormData) {
+    let query = formData.get('search') as string;
+    let newUrl = `/?search=${encodeURIComponent(query)}`;
+    latestUrlRef.current = newUrl;
+    updateCountRef.current++;
+
+    if (!isUpdatingRef.current) {
+      isUpdatingRef.current = true;
+      let currentUpdateCount = updateCountRef.current;
+
+      router.replace(newUrl);
+
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          isUpdatingRef.current = false;
+          if (updateCountRef.current !== currentUpdateCount) {
+            formRef.current?.requestSubmit();
+          }
+          resolve();
+        }, 300);
+      });
+    }
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let newValue = e.target.value;
+    setInputValue(newValue);
     formRef.current?.requestSubmit();
-  };
+  }
 
   useEffect(() => {
-    if (inputRef.current && document.activeElement !== inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.setSelectionRange(
-        inputRef.current.value.length,
-        inputRef.current.value.length
-      );
     }
   }, []);
+
+  if (updateCountRef.current > 0 && !isUpdatingRef.current) {
+    use(Promise.resolve()); // Suspend to trigger a re-render
+  }
 
   return (
     <Form
       ref={formRef}
-      action="/"
-      replace
+      action={handleSubmit}
       className="relative flex flex-1 flex-shrink-0 w-full rounded shadow-sm"
     >
       <label htmlFor="search" className="sr-only">
@@ -66,7 +73,7 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
         name="search"
         id="search"
         placeholder="Search books..."
-        defaultValue={initialQuery}
+        value={inputValue}
         className="w-full border-0 px-10 py-6 text-base md:text-sm overflow-hidden focus-visible:ring-0"
       />
       <LoadingSpinner />
