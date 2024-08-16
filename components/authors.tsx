@@ -97,31 +97,6 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
     });
   }, [router, searchParams]);
 
-  const AuthorItem = ({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) => {
-    const author = filteredAuthors[index];
-    return (
-      <div style={style} className="flex items-center space-x-2">
-        <Checkbox
-          id={author.id}
-          checked={optimisticAuthors.includes(author.id)}
-          onCheckedChange={() => handleAuthorToggle(author.id)}
-        />
-        <label
-          htmlFor={author.id}
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 truncate"
-        >
-          {author.name}
-        </label>
-      </div>
-    );
-  };
-
   return (
     <div
       data-pending={isPending ? '' : undefined}
@@ -162,7 +137,29 @@ function AuthorsBase({ allAuthors, searchParams }: AuthorsProps) {
                         itemSize={30}
                         width="100%"
                       >
-                        {AuthorItem}
+                        {({ index, style }) => {
+                          const author = authors[index];
+                          return (
+                            <div
+                              style={style}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`${letter}-${author.id}`}
+                                checked={optimisticAuthors.includes(author.id)}
+                                onCheckedChange={() =>
+                                  handleAuthorToggle(author.id)
+                                }
+                              />
+                              <label
+                                htmlFor={`${letter}-${author.id}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 truncate"
+                              >
+                                {author.name}
+                              </label>
+                            </div>
+                          );
+                        }}
                       </List>
                     </CollapsibleContent>
                   )}
