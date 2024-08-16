@@ -2,20 +2,45 @@
 
 import Form from 'next/form';
 import { useFormStatus } from 'react-dom';
-import { useDebouncedCallback } from 'use-debounce';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
+function useSearch() {
+  let router = useRouter();
+  let latestQuery = useRef('');
+  let updateTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  let updateSearch = useCallback(
+    (query: string) => {
+      latestQuery.current = query;
+
+      if (updateTimeout.current) {
+        clearTimeout(updateTimeout.current);
+      }
+
+      updateTimeout.current = setTimeout(() => {
+        router.replace(`/?search=${encodeURIComponent(query)}`);
+      }, 400);
+    },
+    [router]
+  );
+
+  return { updateSearch, latestQuery };
+}
 
 function SearchBase({ initialQuery }: { initialQuery: string }) {
+  let { updateSearch, latestQuery } = useSearch();
   let inputRef = useRef<HTMLInputElement>(null);
   let formRef = useRef<HTMLFormElement>(null);
 
-  let handleInputChange = useDebouncedCallback((e) => {
+  let handleInputChange = (e) => {
     e.preventDefault();
+    updateSearch(e.target.value);
     formRef.current?.requestSubmit();
-  }, 200);
+  };
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
@@ -48,27 +73,35 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
         defaultValue={initialQuery}
         className="w-full border-0 px-10 py-6 text-base md:text-sm overflow-hidden focus-visible:ring-0"
       />
-      <LoadingIcon />
+      <LoadingSpinner />
     </Form>
   );
 }
 
-function LoadingIcon() {
+function LoadingSpinner() {
   let { pending } = useFormStatus();
 
-  return pending ? (
+  return (
     <div
       data-pending={pending ? '' : undefined}
-      className="absolute right-3 top-1/2 -translate-y-1/2"
+      className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity duration-300"
     >
-      <div
-        className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"
-        role="status"
-      >
-        <span className="sr-only">Loading...</span>
-      </div>
+      <svg className="h-5 w-5" viewBox="0 0 100 100">
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="10"
+          strokeDasharray="282.7"
+          strokeDashoffset="282.7"
+          className={`${pending ? 'animate-fill-clock' : ''}`}
+          transform="rotate(-90 50 50)"
+        />
+      </svg>
     </div>
-  ) : null;
+  );
 }
 
 export function SearchFallback() {

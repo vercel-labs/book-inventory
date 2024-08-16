@@ -65,10 +65,19 @@ export default {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        fillClock: {
+          '0%': { strokeDashoffset: '282.7' },
+          '100%': { strokeDashoffset: '0' },
+        },
+        colorChange: {
+          '0%': { stroke: 'transparent' },
+          '100%': { stroke: 'currentColor' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fill-clock': 'fillClock 6s linear, colorChange 6s linear',
       },
     },
   },
