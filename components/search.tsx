@@ -5,39 +5,18 @@ import { useFormStatus } from 'react-dom';
 import { useRef, use, useEffect, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useBackpressure } from '@/lib/use-backpressure';
 
 function SearchBase({ initialQuery }: { initialQuery: string }) {
-  let router = useRouter();
   let [inputValue, setInputValue] = useState(initialQuery);
-  let latestUrlRef = useRef(`/?search=${encodeURIComponent(initialQuery)}`);
-  let isUpdatingRef = useRef(false);
   let inputRef = useRef<HTMLInputElement>(null);
-  let formRef = useRef<HTMLFormElement>(null);
-  let updateCountRef = useRef(0);
+  let { triggerUpdate, shouldSuspend, formRef } = useBackpressure();
 
   async function handleSubmit(formData: FormData) {
     let query = formData.get('search') as string;
     let newUrl = `/?search=${encodeURIComponent(query)}`;
-    latestUrlRef.current = newUrl;
-    updateCountRef.current++;
-
-    if (!isUpdatingRef.current) {
-      isUpdatingRef.current = true;
-      let currentUpdateCount = updateCountRef.current;
-
-      router.replace(newUrl);
-
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          isUpdatingRef.current = false;
-          if (updateCountRef.current !== currentUpdateCount) {
-            formRef.current?.requestSubmit();
-          }
-          resolve();
-        }, 300);
-      });
-    }
+    await triggerUpdate(newUrl);
   }
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -52,8 +31,8 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
     }
   }, []);
 
-  if (updateCountRef.current > 0 && !isUpdatingRef.current) {
-    use(Promise.resolve()); // Suspend to trigger a re-render
+  if (shouldSuspend) {
+    use(Promise.resolve());
   }
 
   return (
@@ -112,6 +91,6 @@ export function SearchFallback() {
 }
 
 export function Search() {
-  let query = useSearchParams().get('q') ?? '';
+  let query = useSearchParams().get('search') ?? '';
   return <SearchBase initialQuery={query} />;
 }
