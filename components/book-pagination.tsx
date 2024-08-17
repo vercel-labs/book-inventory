@@ -42,6 +42,10 @@ export function BookPagination({
   totalPages: number;
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
+  if (totalPages <= 1) {
+    return null;
+  }
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     pageNumbers.push(1);

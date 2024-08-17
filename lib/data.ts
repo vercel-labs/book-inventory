@@ -21,7 +21,9 @@ export async function fetchBooksWithPagination(searchParams: {
 
   let whereClause = sql`TRUE`;
   if (query) {
-    whereClause = sql`${books.title} ILIKE ${`%${query}%`}`;
+    whereClause = sql`
+      lower(unaccent(${books.title})) LIKE lower(unaccent(${`%${query}%`}))
+    `;
   }
 
   if (selectedAuthors.length > 0) {
