@@ -28,6 +28,10 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
+      inputRef.current.setSelectionRange(
+        inputRef.current.value.length,
+        inputRef.current.value.length
+      );
     }
   }, []);
 
