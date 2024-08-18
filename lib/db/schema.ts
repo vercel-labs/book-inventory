@@ -25,7 +25,7 @@ export const authors = pgTable('authors', {
 
 export const books = pgTable('books', {
   id: serial('id').primaryKey(),
-  isbn: text('isbn'),
+  isbn: text('isbn').unique(),
   isbn13: text('isbn13'),
   title: text('title').notNull(),
   publication_year: integer('publication_year'),

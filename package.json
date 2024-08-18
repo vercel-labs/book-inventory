@@ -6,7 +6,8 @@
     "start": "next start",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx lib/db/seed.ts",
+    "db:seed-authors": "tsx lib/db/seed-authors.ts",
+    "db:seed-books": "tsx lib/db/seed-books.ts",
     "db:embeddings": "tsx lib/ai/create-embeddings.ts"
   },
   "dependencies": {

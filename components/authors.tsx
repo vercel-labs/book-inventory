@@ -35,6 +35,7 @@ function createAuthorGroups(authors: Author[]) {
   groups['Other'] = [];
 
   authors.forEach((author) => {
+    if (!author.name) return;
     const firstLetter = author.name[0].toUpperCase();
     if (firstLetter >= 'A' && firstLetter <= 'Z') {
       groups[firstLetter].push(author);

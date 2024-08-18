@@ -8,5 +8,5 @@ if (!process.env.POSTGRES_URL) {
   throw new Error('POSTGRES_URL environment variable is not set');
 }
 
-const postgres = neon(process.env.POSTGRES_URL);
-export const db = drizzle(postgres);
+export const sql = neon(process.env.POSTGRES_URL);
+export const db = drizzle(sql);

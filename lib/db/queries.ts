@@ -133,7 +133,8 @@ export async function fetchAuthors() {
       name: authors.name,
     })
     .from(authors)
-    .orderBy(authors.name);
+    .orderBy(authors.name)
+    .limit(10000);
 
   if (result.length == 0) {
     throw new Error('Database setup incomplete');
