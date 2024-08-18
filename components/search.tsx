@@ -2,23 +2,31 @@
 
 import Form from 'next/form';
 import { useFormStatus } from 'react-dom';
-import { useDebouncedCallback } from 'use-debounce';
-import { useEffect, useRef } from 'react';
+import { useRef, use, useEffect, useState } from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useSearchParams } from 'next/navigation';
+import { useBackpressure } from '@/lib/use-backpressure';
 
 function SearchBase({ initialQuery }: { initialQuery: string }) {
+  let [inputValue, setInputValue] = useState(initialQuery);
   let inputRef = useRef<HTMLInputElement>(null);
-  let formRef = useRef<HTMLFormElement>(null);
+  let { triggerUpdate, shouldSuspend, formRef } = useBackpressure();
 
-  let handleInputChange = useDebouncedCallback((e) => {
-    e.preventDefault();
+  async function handleSubmit(formData: FormData) {
+    let query = formData.get('search') as string;
+    let newUrl = `/?search=${encodeURIComponent(query)}`;
+    await triggerUpdate(newUrl);
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let newValue = e.target.value;
+    setInputValue(newValue);
     formRef.current?.requestSubmit();
-  }, 200);
+  }
 
   useEffect(() => {
-    if (inputRef.current && document.activeElement !== inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.focus();
       inputRef.current.setSelectionRange(
         inputRef.current.value.length,
@@ -27,11 +35,14 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
     }
   }, []);
 
+  if (shouldSuspend) {
+    use(Promise.resolve());
+  }
+
   return (
     <Form
       ref={formRef}
-      action="/"
-      replace
+      action={handleSubmit}
       className="relative flex flex-1 flex-shrink-0 w-full rounded shadow-sm"
     >
       <label htmlFor="search" className="sr-only">
@@ -45,30 +56,38 @@ function SearchBase({ initialQuery }: { initialQuery: string }) {
         name="search"
         id="search"
         placeholder="Search books..."
-        defaultValue={initialQuery}
+        value={inputValue}
         className="w-full border-0 px-10 py-6 text-base md:text-sm overflow-hidden focus-visible:ring-0"
       />
-      <LoadingIcon />
+      <LoadingSpinner />
     </Form>
   );
 }
 
-function LoadingIcon() {
+function LoadingSpinner() {
   let { pending } = useFormStatus();
 
-  return pending ? (
+  return (
     <div
       data-pending={pending ? '' : undefined}
-      className="absolute right-3 top-1/2 -translate-y-1/2"
+      className="absolute right-3 top-1/2 -translate-y-1/2 transition-opacity duration-300"
     >
-      <div
-        className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"
-        role="status"
-      >
-        <span className="sr-only">Loading...</span>
-      </div>
+      <svg className="h-5 w-5" viewBox="0 0 100 100">
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="10"
+          strokeDasharray="282.7"
+          strokeDashoffset="282.7"
+          className={pending ? 'animate-fill-clock' : ''}
+          transform="rotate(-90 50 50)"
+        />
+      </svg>
     </div>
-  ) : null;
+  );
 }
 
 export function SearchFallback() {
@@ -76,6 +95,6 @@ export function SearchFallback() {
 }
 
 export function Search() {
-  let query = useSearchParams().get('q') ?? '';
+  let query = useSearchParams().get('search') ?? '';
   return <SearchBase initialQuery={query} />;
 }

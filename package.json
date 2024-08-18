@@ -18,9 +18,9 @@
     "@radix-ui/react-collapsible": "^1.1.0",
     "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/node": "^22.4.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/react-window": "^1.8.8",
     "ai": "^3.3.7",
     "autoprefixer": "^10.4.20",
@@ -43,7 +43,6 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
-    "use-debounce": "^10.0.2",
     "zod": "^3.23.8"
   }
 }
