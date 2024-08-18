@@ -5,7 +5,9 @@ import { processEntities } from './seed-utils';
 
 const BATCH_SIZE = 2000;
 const CHECKPOINT_FILE = 'author_import_checkpoint.json';
-const TOTAL_AUTHORS = 829529;
+
+// https://datarepo.eng.ucsd.edu/mcauley_group/gdrive/goodreads/goodreads_book_authors.json.gz
+const TOTAL_AUTHORS = 4; // 829529 in full dataset, 4 in sample data
 
 interface AuthorData {
   average_rating: string;

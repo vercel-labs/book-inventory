@@ -5,7 +5,9 @@ import { processEntities } from './seed-utils';
 
 const BATCH_SIZE = 900;
 const CHECKPOINT_FILE = 'book_import_checkpoint.json';
-const TOTAL_BOOKS = 2360655;
+
+// https://datarepo.eng.ucsd.edu/mcauley_group/gdrive/goodreads/goodreads_books.json.gz
+const TOTAL_BOOKS = 4; // 2360655 in full dataset, 4 in sample data
 
 interface BookData {
   isbn: string | null;
