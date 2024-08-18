@@ -6,7 +6,7 @@ import { StarRating } from './rating';
 
 // Prerender the first page of books
 export async function generateStaticParams() {
-  const { books } = await fetchBooksWithPagination({});
+  const books = await fetchBooksWithPagination({});
 
   return books.map((books) => ({
     id: books.id.toString(),

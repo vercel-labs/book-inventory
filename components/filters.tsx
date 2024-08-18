@@ -14,8 +14,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import {
+  SearchParams,
+  parseSearchParams,
+  stringifySearchParams,
+} from '@/lib/url-state';
 
 const GENRES = ['Fiction', 'Romance', 'Biography', 'Sci-Fi', 'Non-Fiction'];
+
+const LANGUAGES = [
+  { value: 'en', label: 'English' },
+  { value: 'spa', label: 'Spanish' },
+  { value: 'ita', label: 'Italian' },
+  { value: 'ara', label: 'Arabic' },
+  { value: 'fre', label: 'French' },
+  { value: 'ger', label: 'German' },
+  { value: 'ind', label: 'Indonesian' },
+  { value: 'por', label: 'Portuguese' },
+];
 
 interface FilterProps {
   searchParams: URLSearchParams;
@@ -25,31 +41,16 @@ function FilterBase({ searchParams }: FilterProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [optimisticFilters, setOptimisticFilters] = useOptimistic({
-    yr: [1900, 2023],
-    rtg: 0,
-    lng: 'en',
-    pgs: [0, 1000],
-    gnre: [] as string[],
-  });
+  const initialFilters = parseSearchParams(Object.fromEntries(searchParams));
+  const [optimisticFilters, setOptimisticFilters] =
+    useOptimistic<SearchParams>(initialFilters);
 
-  const updateURL = (newFilters: typeof optimisticFilters) => {
-    const newParams = new URLSearchParams(searchParams);
-    Object.entries(newFilters).forEach(([key, value]) => {
-      newParams.delete(key);
-      if (Array.isArray(value)) {
-        value.forEach((v) => newParams.append(key, v.toString()));
-      } else if (value !== 0 && value !== '') {
-        newParams.append(key, value.toString());
-      }
-    });
-    router.push(`/?${newParams}`);
+  const updateURL = (newFilters: SearchParams) => {
+    const queryString = stringifySearchParams(newFilters);
+    router.push(queryString ? `/?${queryString}` : '/');
   };
 
-  const handleFilterChange = (
-    filterType: keyof typeof optimisticFilters,
-    value: any
-  ) => {
+  const handleFilterChange = (filterType: keyof SearchParams, value: any) => {
     startTransition(() => {
       const newFilters = { ...optimisticFilters, [filterType]: value };
       setOptimisticFilters(newFilters);
@@ -59,24 +60,19 @@ function FilterBase({ searchParams }: FilterProps) {
 
   const handleGenreToggle = (genre: string) => {
     startTransition(() => {
-      const newGenres = optimisticFilters.gnre.includes(genre)
-        ? optimisticFilters.gnre.filter((g) => g !== genre)
-        : [...optimisticFilters.gnre, genre];
-      handleFilterChange('gnre', newGenres);
+      const currentGenres =
+        optimisticFilters.search?.split(',').filter(Boolean) || [];
+      const newGenres = currentGenres.includes(genre)
+        ? currentGenres.filter((g) => g !== genre)
+        : [...currentGenres, genre];
+      handleFilterChange('search', newGenres.join(','));
     });
   };
 
   const handleClearFilters = () => {
     startTransition(() => {
-      const defaultFilters = {
-        yr: [1900, 2023],
-        rtg: 0,
-        lng: 'en',
-        pgs: [0, 1000],
-        gnre: [],
-      };
-      setOptimisticFilters(defaultFilters);
-      updateURL(defaultFilters);
+      setOptimisticFilters({});
+      router.push('/');
     });
   };
 
@@ -91,16 +87,18 @@ function FilterBase({ searchParams }: FilterProps) {
             <Label htmlFor="year-range">Publication Year</Label>
             <Slider
               id="year-range"
-              min={1800}
+              min={1950}
               max={2023}
               step={1}
-              value={optimisticFilters.yr}
-              onValueChange={(value) => handleFilterChange('yr', value)}
+              value={[Number(optimisticFilters.yr) || 2023]}
+              onValueChange={([value]) =>
+                handleFilterChange('yr', value.toString())
+              }
               className="mt-2"
             />
             <div className="flex justify-between mt-1 text-sm text-muted-foreground">
-              <span>{optimisticFilters.yr[0]}</span>
-              <span>{optimisticFilters.yr[1]}</span>
+              <span>1950</span>
+              <span>{optimisticFilters.yr || 2023}</span>
             </div>
           </div>
 
@@ -111,13 +109,15 @@ function FilterBase({ searchParams }: FilterProps) {
               min={0}
               max={5}
               step={0.5}
-              value={[optimisticFilters.rtg]}
-              onValueChange={([value]) => handleFilterChange('rtg', value)}
+              value={[Number(optimisticFilters.rtg) || 0]}
+              onValueChange={([value]) =>
+                handleFilterChange('rtg', value.toString())
+              }
               className="mt-2"
             />
             <div className="flex justify-between mt-1 text-sm text-muted-foreground">
               <span>0</span>
-              <span>{optimisticFilters.rtg} stars</span>
+              <span>{optimisticFilters.rtg || 0} stars</span>
               <span>5</span>
             </div>
           </div>
@@ -125,18 +125,18 @@ function FilterBase({ searchParams }: FilterProps) {
           <div>
             <Label htmlFor="language">Language</Label>
             <Select
-              value={optimisticFilters.lng}
+              value={optimisticFilters.lng || 'en'}
               onValueChange={(value) => handleFilterChange('lng', value)}
             >
               <SelectTrigger id="language" className="mt-2">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="ja">Japanese</SelectItem>
+                {LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -145,16 +145,18 @@ function FilterBase({ searchParams }: FilterProps) {
             <Label htmlFor="page-range">Number of Pages</Label>
             <Slider
               id="page-range"
-              min={0}
-              max={1000}
-              step={10}
-              value={optimisticFilters.pgs}
-              onValueChange={(value) => handleFilterChange('pgs', value)}
+              min={1}
+              max={3000}
+              step={100}
+              value={[Number(optimisticFilters.pgs) || 3000]}
+              onValueChange={([value]) =>
+                handleFilterChange('pgs', value.toString())
+              }
               className="mt-2"
             />
             <div className="flex justify-between mt-1 text-sm text-muted-foreground">
-              <span>{optimisticFilters.pgs[0]}</span>
-              <span>{optimisticFilters.pgs[1]}+</span>
+              <span>1</span>
+              <span>{optimisticFilters.pgs || 3000}</span>
             </div>
           </div>
 
@@ -165,7 +167,9 @@ function FilterBase({ searchParams }: FilterProps) {
                 <div key={genre} className="flex items-center space-x-2 py-1">
                   <Checkbox
                     id={`genre-${genre.toLowerCase()}`}
-                    checked={optimisticFilters.gnre.includes(genre)}
+                    checked={(
+                      optimisticFilters.search?.split(',') || []
+                    ).includes(genre)}
                     onCheckedChange={() => handleGenreToggle(genre)}
                   />
                   <Label htmlFor={`genre-${genre.toLowerCase()}`}>
@@ -178,9 +182,7 @@ function FilterBase({ searchParams }: FilterProps) {
         </div>
       </ScrollArea>
 
-      {Object.values(optimisticFilters).some((v) =>
-        Array.isArray(v) ? v.length > 0 : v !== 0
-      ) && (
+      {Object.keys(optimisticFilters).length > 0 && (
         <div className="p-4 border-t">
           <Button
             variant="outline"

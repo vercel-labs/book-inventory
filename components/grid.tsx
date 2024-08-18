@@ -1,8 +1,15 @@
 import Link from 'next/link';
 import { Book } from '@/lib/db/schema';
 import { Photo } from './photo';
+import { SearchParams, stringifySearchParams } from '@/lib/url-state';
 
-export async function BooksGrid({ books }: { books: Book[] }) {
+export async function BooksGrid({
+  books,
+  searchParams,
+}: {
+  books: Book[];
+  searchParams: SearchParams;
+}) {
   return (
     <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7">
       {!books?.length ? (
@@ -12,7 +19,7 @@ export async function BooksGrid({ books }: { books: Book[] }) {
       ) : (
         books.map((book, index) => (
           <Link
-            href={`/${book.id}`}
+            href={`/${book.id}?${stringifySearchParams(searchParams)}`}
             key={book.id}
             className="block transition ease-in-out md:hover:scale-105"
           >

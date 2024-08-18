@@ -9,15 +9,7 @@ import {
   PaginationEllipsis,
   PaginationItem,
 } from '@/components/ui/pagination';
-
-interface SearchParams {
-  search?: string;
-  yr?: string[];
-  rtg?: string;
-  lng?: string;
-  pgs?: string[];
-  page?: string;
-}
+import { SearchParams } from '@/lib/url-state';
 
 function FormValues({
   searchParams,

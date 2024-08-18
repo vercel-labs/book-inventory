@@ -22,6 +22,7 @@ export function Photo({
           sizes="(max-width: 639px) 50vw, (min-width: 640px) 33.33vw, (min-width: 768px) 25vw, (min-width: 1024px) 20vw, (min-width: 1280px) 16.67vw"
           className="object-cover"
           priority={priority}
+          quality={100}
         />
       ) : (
         <EmptyTile />

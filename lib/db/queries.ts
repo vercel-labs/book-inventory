@@ -1,15 +1,22 @@
-import { sql, and, between, eq, desc, count } from 'drizzle-orm';
+import { sql, and, gte, eq, lte, not, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
 import { books, authors, bookToAuthor } from './schema';
+import { SearchParams } from '@/lib/url-state';
 
-const ITEMS_PER_PAGE = 28;
+export const ITEMS_PER_PAGE = 28;
 
-const yearRangeFilter = (yr?: string[]) => {
-  if (yr && yr.length === 2) {
-    const [startYear, endYear] = yr.map(Number);
-    return between(books.publication_year, startYear, endYear);
+const yearFilter = (yr?: string) => {
+  if (yr) {
+    const maxYear = Math.max(1950, Math.min(2023, Number(yr)));
+    return and(
+      gte(books.publication_year, 1950),
+      lte(books.publication_year, maxYear)
+    );
   }
-  return undefined;
+  return and(
+    gte(books.publication_year, 1950),
+    lte(books.publication_year, 2023)
+  );
 };
 
 const ratingFilter = (rtg?: string) => {
@@ -21,15 +28,18 @@ const ratingFilter = (rtg?: string) => {
 };
 
 const languageFilter = (lng?: string) => {
+  if (lng === 'en') {
+    return sql`${books.language_code} IN ('eng', 'en-US', 'en-GB')`;
+  }
   return lng ? eq(books.language_code, lng) : undefined;
 };
 
-const pageRangeFilter = (pgs?: string[]) => {
-  if (pgs && pgs.length === 2) {
-    const [minPages, maxPages] = pgs.map(Number);
-    return between(books.num_pages, minPages, maxPages);
+const pageFilter = (pgs?: string) => {
+  if (pgs) {
+    const maxPages = Math.min(3000, Number(pgs));
+    return lte(books.num_pages, maxPages);
   }
-  return undefined;
+  return lte(books.num_pages, 3000);
 };
 
 const searchFilter = (q?: string) => {
@@ -40,39 +50,31 @@ const searchFilter = (q?: string) => {
   return undefined;
 };
 
-export async function fetchBooksWithPagination(searchParams: {
-  search?: string;
-  yr?: string[];
-  rtg?: string;
-  lng?: string;
-  pgs?: string[];
-  page?: string;
-}) {
+const imageFilter = () => {
+  let emptyUrl =
+    'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
+
+  return and(
+    not(isNull(books.image_url)),
+    sql`${books.image_url} != ${emptyUrl}`
+  );
+};
+
+export async function fetchBooksWithPagination(searchParams: SearchParams) {
   let requestedPage = Math.max(1, Number(searchParams?.page) || 1);
 
   const filters = [
-    yearRangeFilter(searchParams.yr),
+    yearFilter(searchParams.yr),
     ratingFilter(searchParams.rtg),
     languageFilter(searchParams.lng),
-    pageRangeFilter(searchParams.pgs),
+    pageFilter(searchParams.pgs),
+    imageFilter(),
     searchFilter(searchParams.search),
   ].filter(Boolean);
 
   const whereClause = filters.length > 0 ? and(...filters) : undefined;
 
-  // let countResult = await db
-  //   .select({ total: count() })
-  //   .from(books)
-  //   .where(whereClause)
-  //   .limit(ITEMS_PER_PAGE * 100);
-
-  let totalItems = 1000;
-  // let totalItems = Number(countResult[0].total);
-  let totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
-  let currentPage = Math.min(requestedPage, totalPages);
-  let offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  console.log('fetchBooksWithPagination');
+  const offset = (requestedPage - 1) * ITEMS_PER_PAGE;
 
   let paginatedBooks = await db
     .select({
@@ -81,18 +83,37 @@ export async function fetchBooksWithPagination(searchParams: {
       image_url: books.image_url,
     })
     .from(books)
-    // .where(whereClause)
+    .where(whereClause)
+    .orderBy(books.id)
     .limit(ITEMS_PER_PAGE)
     .offset(offset);
 
-  return {
-    books: paginatedBooks,
-    pagination: {
-      currentPage,
-      totalPages,
-      totalItems,
-    },
-  };
+  return paginatedBooks;
+}
+
+export async function estimateTotalBooks(searchParams: SearchParams) {
+  const filters = [
+    yearFilter(searchParams.yr),
+    ratingFilter(searchParams.rtg),
+    languageFilter(searchParams.lng),
+    pageFilter(searchParams.pgs),
+    imageFilter(),
+    searchFilter(searchParams.search),
+  ].filter(Boolean);
+
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
+  // Use explain to get an estimate
+  const explainResult = await db.execute(sql`
+    EXPLAIN (FORMAT JSON)
+    SELECT id FROM books
+    ${whereClause ? sql`WHERE ${whereClause}` : sql``}
+  `);
+
+  const planRows = (explainResult.rows[0] as any)['QUERY PLAN'][0]['Plan'][
+    'Plan Rows'
+  ];
+  return planRows;
 }
 
 export async function fetchBookById(id: string) {
