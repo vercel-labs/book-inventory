@@ -1,11 +1,11 @@
-import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
 import { sql } from './drizzle';
 import { NeonQueryFunction } from '@neondatabase/serverless';
+import { processEntities } from './seed-utils';
 
 const BATCH_SIZE = 2000;
 const CHECKPOINT_FILE = 'author_import_checkpoint.json';
+const TOTAL_AUTHORS = 829529;
 
 interface AuthorData {
   average_rating: string;
@@ -38,71 +38,21 @@ async function batchInsertAuthors(
   await sql.transaction(queries);
 }
 
-async function saveCheckpoint(processedLines: number) {
-  await fs.promises.writeFile(
-    CHECKPOINT_FILE,
-    JSON.stringify({ processedLines }),
-    'utf8'
-  );
-}
-
-async function loadCheckpoint(): Promise<number> {
-  try {
-    const data = await fs.promises.readFile(CHECKPOINT_FILE, 'utf8');
-    return JSON.parse(data).processedLines;
-  } catch (error) {
-    return 0;
-  }
-}
-
-async function processAuthors(filePath: string): Promise<number> {
-  const startLine = await loadCheckpoint();
-  let processedLines = startLine;
-  let batch: AuthorData[] = [];
-
-  const rl = readline.createInterface({
-    input: fs.createReadStream(filePath),
-    crlfDelay: Infinity,
-  });
-
-  for await (const line of rl) {
-    if (processedLines < startLine) {
-      processedLines++;
-      continue;
-    }
-
-    try {
-      const author = JSON.parse(line) as AuthorData;
-      batch.push(author);
-      processedLines++;
-
-      if (batch.length >= BATCH_SIZE) {
-        await batchInsertAuthors(batch, sql);
-        batch = [];
-        await saveCheckpoint(processedLines);
-        console.log(`Processed ${processedLines} authors`);
-      }
-    } catch (error) {
-      console.error('Error processing line:', error);
-    }
-  }
-
-  if (batch.length > 0) {
-    await batchInsertAuthors(batch, sql);
-    await saveCheckpoint(processedLines);
-  }
-
-  return processedLines;
-}
-
 async function main() {
   try {
-    const authorCount = await processAuthors(
-      path.resolve('./lib/db/authors-full.json')
+    const authorCount = await processEntities<AuthorData>(
+      path.resolve('./lib/db/authors-full.json'),
+      CHECKPOINT_FILE,
+      BATCH_SIZE,
+      batchInsertAuthors,
+      sql,
+      TOTAL_AUTHORS
     );
-    console.log(`Seeded ${authorCount} authors`);
+    console.log(
+      `Seeded ${authorCount.toLocaleString()} / ${TOTAL_AUTHORS.toLocaleString()} authors`
+    );
   } catch (error) {
-    console.error('Error in main process:', error);
+    console.error('Error seeding authors:', error);
   }
 }
 
