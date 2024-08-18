@@ -1,87 +1,87 @@
-import { cosineDistance, desc, eq, gt, sql } from 'drizzle-orm';
+import { sql, and, between, eq, desc, count } from 'drizzle-orm';
 import { db } from './drizzle';
 import { books, authors, bookToAuthor } from './schema';
-import { generateEmbedding } from '../ai/embeddings';
 
-const ITEMS_PER_PAGE = 30;
+const ITEMS_PER_PAGE = 28;
+
+const yearRangeFilter = (yr?: string[]) => {
+  if (yr && yr.length === 2) {
+    const [startYear, endYear] = yr.map(Number);
+    return between(books.publication_year, startYear, endYear);
+  }
+  return undefined;
+};
+
+const ratingFilter = (rtg?: string) => {
+  if (rtg) {
+    const minRating = Number(rtg);
+    return sql`${books.average_rating} >= ${minRating}`;
+  }
+  return undefined;
+};
+
+const languageFilter = (lng?: string) => {
+  return lng ? eq(books.language_code, lng) : undefined;
+};
+
+const pageRangeFilter = (pgs?: string[]) => {
+  if (pgs && pgs.length === 2) {
+    const [minPages, maxPages] = pgs.map(Number);
+    return between(books.num_pages, minPages, maxPages);
+  }
+  return undefined;
+};
+
+const searchFilter = (q?: string) => {
+  if (q) {
+    const tsQuery = q.trim().split(/\s+/).join(' & ');
+    return sql`${books.title_tsv} @@ to_tsquery('english', ${tsQuery})`;
+  }
+  return undefined;
+};
 
 export async function fetchBooksWithPagination(searchParams: {
-  q?: string;
-  author?: string | string[];
+  search?: string;
+  yr?: string[];
+  rtg?: string;
+  lng?: string;
+  pgs?: string[];
   page?: string;
 }) {
-  let query = searchParams?.q || '';
   let requestedPage = Math.max(1, Number(searchParams?.page) || 1);
 
-  let selectedAuthors = !searchParams.author
-    ? []
-    : Array.isArray(searchParams.author)
-      ? searchParams.author.map((author) => decodeURIComponent(author.trim()))
-      : searchParams.author
-          .split(',')
-          .map((author) => decodeURIComponent(author.trim()));
+  const filters = [
+    yearRangeFilter(searchParams.yr),
+    ratingFilter(searchParams.rtg),
+    languageFilter(searchParams.lng),
+    pageRangeFilter(searchParams.pgs),
+    searchFilter(searchParams.search),
+  ].filter(Boolean);
 
-  let whereClause = sql`TRUE`;
-  let orderClause = desc(books.createdAt);
-  let similarityClause = sql`1`;
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
 
-  if (query) {
-    const queryEmbedding = await generateEmbedding(query);
-    similarityClause = sql<number>`1 - (${cosineDistance(books.embedding, queryEmbedding)})`;
-    whereClause = sql`${books.embedding} IS NOT NULL AND ${gt(similarityClause, 0.2)}`;
-    orderClause = desc(similarityClause);
-  }
+  // let countResult = await db
+  //   .select({ total: count() })
+  //   .from(books)
+  //   .where(whereClause)
+  //   .limit(ITEMS_PER_PAGE * 100);
 
-  if (selectedAuthors.length > 0) {
-    whereClause = sql`${whereClause} AND ${books.id} IN (
-      SELECT ${bookToAuthor.bookId}
-      FROM ${bookToAuthor}
-      JOIN ${authors} ON ${bookToAuthor.authorId} = ${authors.id}
-      WHERE ${authors.name} IN (${selectedAuthors})
-    )`;
-  }
-
-  let countResult = await db
-    .select({ total: sql<number>`count(DISTINCT ${books.id})` })
-    .from(books)
-    .leftJoin(bookToAuthor, eq(books.id, bookToAuthor.bookId))
-    .leftJoin(authors, eq(bookToAuthor.authorId, authors.id))
-    .where(whereClause);
-
-  let totalItems = Number(countResult[0].total);
+  let totalItems = 1000;
+  // let totalItems = Number(countResult[0].total);
   let totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
-
   let currentPage = Math.min(requestedPage, totalPages);
   let offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  console.log('fetchBooksWithPagination');
 
   let paginatedBooks = await db
     .select({
       id: books.id,
-      isbn: books.isbn,
-      isbn13: books.isbn13,
       title: books.title,
-      publication_year: books.publication_year,
-      publisher: books.publisher,
       image_url: books.image_url,
-      description: books.description,
-      num_pages: books.num_pages,
-      language_code: books.language_code,
-      text_reviews_count: books.text_reviews_count,
-      ratings_count: books.ratings_count,
-      average_rating: books.average_rating,
-      series: books.series,
-      popular_shelves: books.popular_shelves,
-      metadata: books.metadata,
-      createdAt: books.createdAt,
-      authors: sql<string[]>`array_agg(DISTINCT ${authors.name})`,
-      similarity: similarityClause,
     })
     .from(books)
-    .leftJoin(bookToAuthor, eq(books.id, bookToAuthor.bookId))
-    .leftJoin(authors, eq(bookToAuthor.authorId, authors.id))
-    .where(whereClause)
-    .groupBy(books.id)
-    .orderBy(orderClause)
+    // .where(whereClause)
     .limit(ITEMS_PER_PAGE)
     .offset(offset);
 
@@ -100,7 +100,6 @@ export async function fetchBookById(id: string) {
     .select({
       id: books.id,
       isbn: books.isbn,
-      isbn13: books.isbn13,
       title: books.title,
       publication_year: books.publication_year,
       publisher: books.publisher,
@@ -112,7 +111,6 @@ export async function fetchBookById(id: string) {
       ratings_count: books.ratings_count,
       average_rating: books.average_rating,
       series: books.series,
-      popular_shelves: books.popular_shelves,
       createdAt: books.createdAt,
       authors: sql<string[]>`array_agg(${authors.name})`,
     })
@@ -124,21 +122,4 @@ export async function fetchBookById(id: string) {
     .limit(1);
 
   return result[0];
-}
-
-export async function fetchAuthors() {
-  let result = await db
-    .select({
-      id: authors.id,
-      name: authors.name,
-    })
-    .from(authors)
-    .orderBy(authors.name)
-    .limit(10000);
-
-  if (result.length == 0) {
-    throw new Error('Database setup incomplete');
-  }
-
-  return result;
 }

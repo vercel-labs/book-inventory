@@ -3,12 +3,39 @@ import { BooksGrid } from '@/components/grid';
 import { BookPagination } from '@/components/book-pagination';
 import { fetchBooksWithPagination } from '@/lib/db/queries';
 
+interface SearchParams {
+  search?: string;
+  yr?: string[];
+  rtg?: string;
+  lng?: string;
+  pgs?: string[];
+  page?: string;
+}
+
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { q?: string; author?: string | string[]; page?: string };
+  searchParams: SearchParams;
 }) {
-  const { books, pagination } = await fetchBooksWithPagination(searchParams);
+  const parsedSearchParams: SearchParams = {
+    search: searchParams.search,
+    yr: searchParams.yr
+      ? Array.isArray(searchParams.yr)
+        ? searchParams.yr
+        : [searchParams.yr]
+      : undefined,
+    rtg: searchParams.rtg,
+    lng: searchParams.lng,
+    pgs: searchParams.pgs
+      ? Array.isArray(searchParams.pgs)
+        ? searchParams.pgs
+        : [searchParams.pgs]
+      : undefined,
+    page: searchParams.page,
+  };
+
+  const { books, pagination } =
+    await fetchBooksWithPagination(parsedSearchParams);
 
   return (
     <div className="flex flex-col h-full">
@@ -22,7 +49,7 @@ export default async function Page({
           <BookPagination
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
-            searchParams={searchParams}
+            searchParams={parsedSearchParams}
           />
         </Suspense>
       </div>

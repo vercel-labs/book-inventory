@@ -10,11 +10,20 @@ import {
   PaginationItem,
 } from '@/components/ui/pagination';
 
+interface SearchParams {
+  search?: string;
+  yr?: string[];
+  rtg?: string;
+  lng?: string;
+  pgs?: string[];
+  page?: string;
+}
+
 function FormValues({
   searchParams,
   pageNumber,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: SearchParams;
   pageNumber: number;
 }) {
   let { pending } = useFormStatus();
@@ -40,7 +49,7 @@ export function BookPagination({
 }: {
   currentPage: number;
   totalPages: number;
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: SearchParams;
 }) {
   if (totalPages <= 1) {
     return null;
