@@ -17,7 +17,7 @@ export async function BooksGrid({
           No books found.
         </p>
       ) : (
-        books.map((book, index) => (
+        books.map((book) => (
           <Link
             href={`/${book.id}?${stringifySearchParams(searchParams)}`}
             key={book.id}
@@ -26,7 +26,7 @@ export async function BooksGrid({
             <Photo
               src={book.image_url!}
               title={book.title}
-              priority={index < 4}
+              thumbhash={book.thumbhash!}
             />
           </Link>
         ))

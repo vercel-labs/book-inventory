@@ -4,6 +4,8 @@ import { books, authors, bookToAuthor } from './schema';
 import { SearchParams } from '@/lib/url-state';
 
 export const ITEMS_PER_PAGE = 28;
+export const EMPTY_IMAGE_URL =
+  'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
 
 const yearFilter = (yr?: string) => {
   if (yr) {
@@ -51,12 +53,9 @@ const searchFilter = (q?: string) => {
 };
 
 const imageFilter = () => {
-  let emptyUrl =
-    'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
-
   return and(
     not(isNull(books.image_url)),
-    sql`${books.image_url} != ${emptyUrl}`
+    sql`${books.image_url} != ${EMPTY_IMAGE_URL}`
   );
 };
 
@@ -81,6 +80,7 @@ export async function fetchBooksWithPagination(searchParams: SearchParams) {
       id: books.id,
       title: books.title,
       image_url: books.image_url,
+      thumbhash: books.thumbhash,
     })
     .from(books)
     .where(whereClause)
@@ -134,6 +134,7 @@ export async function fetchBookById(id: string) {
       series: books.series,
       createdAt: books.createdAt,
       authors: sql<string[]>`array_agg(${authors.name})`,
+      thumbhash: books.thumbhash,
     })
     .from(books)
     .leftJoin(bookToAuthor, eq(books.id, bookToAuthor.bookId))

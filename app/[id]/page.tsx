@@ -22,7 +22,11 @@ export default async function Page({ params }: { params: { id: string } }) {
         <BackButton />
         <div className="flex flex-col w-full md:flex-row">
           <div className="w-1/4 mr-6 flex-none relative aspect-[2/3] mb-6">
-            <Photo src={book.image_url ?? ''} title={book.title} />
+            <Photo
+              src={book.image_url!}
+              title={book.title}
+              thumbhash={book.thumbhash!}
+            />
           </div>
           <div>
             <div className="mb-2 text-2xl md:text-5xl font-bold">

@@ -13,7 +13,7 @@ import {
 import { relations, sql } from 'drizzle-orm';
 
 export type SelectBook = typeof books.$inferSelect;
-export type Book = Pick<SelectBook, 'id' | 'title' | 'image_url'>;
+export type Book = Pick<SelectBook, 'id' | 'title' | 'image_url' | 'thumbhash'>;
 export type SelectAuthor = typeof authors.$inferSelect;
 export type Author = Pick<SelectAuthor, 'id' | 'name'>;
 
@@ -47,6 +47,7 @@ export const books = pgTable(
     metadata: json('metadata'),
     embedding: vector('embedding', { dimensions: 1536 }),
     title_tsv: text('title_tsv').notNull(),
+    thumbhash: text('thumbhash'),
   },
   (table) => ({
     titleTsvIdx: index('idx_books_title_tsv').using(
