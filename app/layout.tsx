@@ -26,7 +26,7 @@ export default function RootLayout({
           GeistSans.variable
         )}
       >
-        <div className="flex w-full">
+        <div className="group flex w-full">
           <div className="hidden md:block w-[300px] h-screen sticky top-0 p-8">
             <div className="h-full rounded-lg bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
               <div className="h-full overflow-y-auto p-4">
@@ -36,7 +36,7 @@ export default function RootLayout({
               </div>
             </div>
           </div>
-          <div className="group flex-1 flex flex-col min-h-screen">
+          <div className="flex-1 flex flex-col min-h-screen">
             <div className="sticky top-0 z-10 bg-gray-100 dark:bg-black">
               <div className="mx-8 py-4">
                 <Suspense fallback={<SearchFallback />}>
