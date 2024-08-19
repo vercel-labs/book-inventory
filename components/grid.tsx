@@ -18,19 +18,36 @@ export async function BooksGrid({
         </p>
       ) : (
         books.map((book) => (
-          <Link
-            href={`/${book.id}?${stringifySearchParams(searchParams)}`}
-            key={book.id}
-            className="block transition ease-in-out md:hover:scale-105"
-          >
-            <Photo
-              src={book.image_url!}
-              title={book.title}
-              thumbhash={book.thumbhash!}
-            />
-          </Link>
+          <BookLink key={book.id} book={book} searchParams={searchParams} />
         ))
       )}
     </div>
+  );
+}
+
+function BookLink({
+  book,
+  searchParams,
+}: {
+  book: Book;
+  searchParams: SearchParams;
+}) {
+  if (!book.thumbhash) {
+    console.warn(`Book ${book.id} has no thumbhash`);
+    return null;
+  }
+
+  return (
+    <Link
+      href={`/${book.id}?${stringifySearchParams(searchParams)}`}
+      key={book.id}
+      className="block transition ease-in-out md:hover:scale-105"
+    >
+      <Photo
+        src={book.image_url!}
+        title={book.title}
+        thumbhash={book.thumbhash!}
+      />
+    </Link>
   );
 }

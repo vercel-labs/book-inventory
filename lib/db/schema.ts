@@ -63,6 +63,7 @@ export const books = pgTable(
     languageCodeIdx: index('idx_books_language_code').on(table.language_code),
     numPagesIdx: index('idx_books_num_pages').on(table.num_pages),
     createdAtIdx: index('idx_books_created_at').on(table.createdAt),
+    isbnIdx: index('idx_books_isbn').on(table.isbn),
   })
 );
 

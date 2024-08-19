@@ -59,6 +59,17 @@ const imageFilter = () => {
   );
 };
 
+const isbnFilter = (isbn?: string) => {
+  if (isbn) {
+    const isbnArray = isbn.split(',').map((id) => id.trim());
+    return sql`books.isbn IN (${sql.join(
+      isbnArray.map((id) => sql`${id}`),
+      sql`, `
+    )})`;
+  }
+  return undefined;
+};
+
 export async function fetchBooksWithPagination(searchParams: SearchParams) {
   let requestedPage = Math.max(1, Number(searchParams?.page) || 1);
 
@@ -69,13 +80,13 @@ export async function fetchBooksWithPagination(searchParams: SearchParams) {
     pageFilter(searchParams.pgs),
     imageFilter(),
     searchFilter(searchParams.search),
+    isbnFilter(searchParams.isbn),
   ].filter(Boolean);
 
   const whereClause = filters.length > 0 ? and(...filters) : undefined;
-
   const offset = (requestedPage - 1) * ITEMS_PER_PAGE;
 
-  let paginatedBooks = await db
+  const paginatedBooks = await db
     .select({
       id: books.id,
       title: books.title,
@@ -99,6 +110,7 @@ export async function estimateTotalBooks(searchParams: SearchParams) {
     pageFilter(searchParams.pgs),
     imageFilter(),
     searchFilter(searchParams.search),
+    isbnFilter(searchParams.isbn),
   ].filter(Boolean);
 
   const whereClause = filters.length > 0 ? and(...filters) : undefined;
