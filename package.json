@@ -42,7 +42,6 @@
     "prettier": "^3.2.5",
     "react": "19.0.0-rc-e948a5ac-20240807",
     "react-dom": "19.0.0-rc-e948a5ac-20240807",
-    "react-window": "^1.8.10",
     "sharp": "^0.33.5",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
