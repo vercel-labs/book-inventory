@@ -2,7 +2,7 @@
 
 Demo: https://next-books-search.vercel.app
 
-This is a simple book inventory app built with Next.js, Drizzle, and PostgreSQL. The database contains over 50,000 books from the included `books.csv` file.
+This is a book inventory app built with Next.js, Drizzle, and PostgreSQL. The database contains over 2,000,000 books from Goodreads. [Full dataset here](https://mengtingwan.github.io/data/goodreads.html).
 
 ## Database Setup
 

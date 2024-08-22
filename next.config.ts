@@ -11,7 +11,7 @@ export default {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'i.gr-assets.com',
+        hostname: '*.gr-assets.com',
         port: '',
       },
     ],

@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button';
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
 } from '@/components/ui/pagination';
+import { SearchParams } from '@/lib/url-state';
 
 function FormValues({
   searchParams,
   pageNumber,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: SearchParams;
   pageNumber: number;
 }) {
   let { pending } = useFormStatus();
@@ -36,36 +36,21 @@ function FormValues({
 export function BookPagination({
   currentPage,
   totalPages,
+  totalResults,
   searchParams,
 }: {
   currentPage: number;
   totalPages: number;
-  searchParams: { [key: string]: string | string[] | undefined };
+  totalResults: number;
+  searchParams: SearchParams;
 }) {
   if (totalPages <= 1) {
     return null;
   }
 
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    pageNumbers.push(1);
-    if (currentPage > 3) pageNumbers.push('...');
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pageNumbers.push(i);
-    }
-    if (currentPage < totalPages - 2) pageNumbers.push('...');
-    if (totalPages > 1 && !pageNumbers.includes(totalPages))
-      pageNumbers.push(totalPages);
-    return pageNumbers;
-  };
-
   return (
     <Pagination>
-      <PaginationContent>
+      <PaginationContent className="flex items-center justify-between">
         <PaginationItem>
           <Form action="/">
             <FormValues
@@ -83,43 +68,9 @@ export function BookPagination({
           </Form>
         </PaginationItem>
 
-        {/* Mobile View */}
-        <div className="flex md:hidden">
-          <PaginationItem>
-            <Form action="/">
-              <FormValues
-                searchParams={searchParams}
-                pageNumber={currentPage}
-              />
-              <Button type="submit" variant="outline">
-                {currentPage}
-              </Button>
-            </Form>
-          </PaginationItem>
-        </div>
-
-        {/* Desktop View */}
-        <div className="hidden md:flex">
-          {getPageNumbers().map((pageNumber, index) => (
-            <PaginationItem key={index}>
-              {pageNumber === '...' ? (
-                <PaginationEllipsis />
-              ) : (
-                <Form action="/">
-                  <FormValues
-                    searchParams={searchParams}
-                    pageNumber={pageNumber as number}
-                  />
-                  <Button
-                    type="submit"
-                    variant={pageNumber === currentPage ? 'outline' : 'ghost'}
-                  >
-                    {pageNumber}
-                  </Button>
-                </Form>
-              )}
-            </PaginationItem>
-          ))}
+        <div className="text-sm text-muted-foreground">
+          {totalResults.toLocaleString()} results (
+          {currentPage.toLocaleString()} of {totalPages.toLocaleString()})
         </div>
 
         <PaginationItem>
