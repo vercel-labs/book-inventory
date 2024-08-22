@@ -115,7 +115,7 @@ function FilterBase({ searchParams }: FilterProps) {
               id="year-range"
               min={1950}
               max={2023}
-              step={1}
+              step={10}
               value={[Number(optimisticFilters.yr) || 2023]}
               onValueChange={([value]) =>
                 handleFilterChange('yr', value.toString())

@@ -35,6 +35,7 @@ export default async function Page({
           <BookPagination
             currentPage={currentPage}
             totalPages={totalPages}
+            totalResults={estimatedTotal}
             searchParams={parsedSearchParams}
           />
         </Suspense>
