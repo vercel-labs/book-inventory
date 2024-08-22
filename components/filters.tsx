@@ -172,9 +172,9 @@ function FilterBase({ searchParams }: FilterProps) {
             <Slider
               id="page-range"
               min={1}
-              max={3000}
+              max={1000}
               step={100}
-              value={[Number(optimisticFilters.pgs) || 3000]}
+              value={[Number(optimisticFilters.pgs) || 1000]}
               onValueChange={([value]) =>
                 handleFilterChange('pgs', value.toString())
               }
@@ -182,7 +182,7 @@ function FilterBase({ searchParams }: FilterProps) {
             />
             <div className="flex justify-between mt-1 text-sm text-muted-foreground">
               <span>1</span>
-              <span>{optimisticFilters.pgs || 3000}</span>
+              <span>{optimisticFilters.pgs || 1000}</span>
             </div>
           </div>
 

@@ -38,10 +38,10 @@ const languageFilter = (lng?: string) => {
 
 const pageFilter = (pgs?: string) => {
   if (pgs) {
-    const maxPages = Math.min(3000, Number(pgs));
+    const maxPages = Math.min(1000, Number(pgs));
     return lte(books.num_pages, maxPages);
   }
-  return lte(books.num_pages, 3000);
+  return lte(books.num_pages, 1000);
 };
 
 const searchFilter = (q?: string) => {
