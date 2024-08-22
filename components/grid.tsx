@@ -37,11 +37,14 @@ function BookLink({
     return null;
   }
 
+  let noFilters = Object.values(searchParams).every((v) => v === undefined);
+
   return (
     <Link
       href={`/${book.id}?${stringifySearchParams(searchParams)}`}
       key={book.id}
       className="block transition ease-in-out md:hover:scale-105"
+      prefetch={noFilters ? true : null}
     >
       <Photo
         src={book.image_url!}
