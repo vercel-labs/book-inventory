@@ -61,6 +61,7 @@ export default async function Page({
             src={book.image_url!}
             title={book.title}
             thumbhash={book.thumbhash!}
+            priority={true}
           />
         </div>
 
