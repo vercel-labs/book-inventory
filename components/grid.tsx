@@ -17,8 +17,13 @@ export async function BooksGrid({
           No books found.
         </p>
       ) : (
-        books.map((book) => (
-          <BookLink key={book.id} book={book} searchParams={searchParams} />
+        books.map((book, index) => (
+          <BookLink
+            key={book.id}
+            priority={index < 10}
+            book={book}
+            searchParams={searchParams}
+          />
         ))
       )}
     </div>
@@ -26,9 +31,11 @@ export async function BooksGrid({
 }
 
 function BookLink({
+  priority,
   book,
   searchParams,
 }: {
+  priority: boolean;
   book: Book;
   searchParams: SearchParams;
 }) {
@@ -50,6 +57,7 @@ function BookLink({
         src={book.image_url!}
         title={book.title}
         thumbhash={book.thumbhash!}
+        priority={priority}
       />
     </Link>
   );
