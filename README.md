@@ -6,10 +6,11 @@ This is a book inventory app built with Next.js, Drizzle, and PostgreSQL. The da
 
 ## Database Setup
 
-This is currently using a Postgres extension called `unaccent` to remove accents from the book titles. To install this extension, run the following command on your database:
+This is currently using a Postgres extension called `unaccent` to remove accents from the book titles. This also uses the pgvector extension to use Postgres as a vector store. To install these extensions, run the following command on your database:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS unaccent;
+CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 ## Deploy on Vercel
