@@ -54,7 +54,9 @@ async function generateThumbHash(imageBuffer: Buffer): Promise<string | null> {
   }
 }
 
-async function processBook(book: BookData): Promise<[string, string] | null> {
+export async function processBook(
+  book: BookData,
+): Promise<[string, string] | null> {
   if (book.image_url && book.image_url !== EMPTY_IMAGE_URL) {
     const imageBuffer = await fetchImage(book.image_url);
     if (imageBuffer) {
@@ -67,24 +69,24 @@ async function processBook(book: BookData): Promise<[string, string] | null> {
   return null;
 }
 
+export const updateThumbhashQuery = `
+UPDATE books
+SET thumbhash = $1
+WHERE image_url = $2
+`;
+
 async function batchUpdateThumbHash(
   batch: BookData[],
-  sqlQuery: NeonQueryFunction<false, false>
+  sqlQuery: NeonQueryFunction<false, false>,
 ) {
-  const updateThumbhashQuery = `
-    UPDATE books
-    SET thumbhash = $1
-    WHERE image_url = $2
-  `;
-
   const processedBooks = await Promise.all(
-    batch.map((book) => limit(() => processBook(book)))
+    batch.map((book) => limit(() => processBook(book))),
   );
 
   const queries = processedBooks
     .filter((result): result is [string, string] => result !== null)
     .map(([thumbHash, imageUrl]) =>
-      sqlQuery(updateThumbhashQuery, [thumbHash, imageUrl])
+      sqlQuery(updateThumbhashQuery, [thumbHash, imageUrl]),
     );
 
   return sqlQuery.transaction((tx) => queries);
