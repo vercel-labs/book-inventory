@@ -38,13 +38,14 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: SearchParams;
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<SearchParams>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const book = await fetchBookById(params.id);
 
   return (

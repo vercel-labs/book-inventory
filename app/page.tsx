@@ -8,11 +8,12 @@ import {
 } from '@/lib/db/queries';
 import { parseSearchParams } from '@/lib/url-state';
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>;
-}) {
+export default async function Page(
+  props: {
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const parsedSearchParams = parseSearchParams(searchParams);
 
   const [books, estimatedTotal] = await Promise.all([
